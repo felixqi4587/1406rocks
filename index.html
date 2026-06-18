@@ -31,13 +31,11 @@
   .clock small{display:block;color:var(--t3);font-weight:400;font-size:10px;margin-top:2px}
   .castlephase{font-size:11px;color:var(--t2);background:var(--surface);border-radius:8px;padding:6px 10px;margin:8px 0 12px;text-align:center}
   .castlephase b{color:var(--ac2)}
-
   .tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:14px;position:sticky;top:0;
-    background:linear-gradient(180deg,#14110B 70%,rgba(20,17,11,0));padding-top:4px;z-index:9}
+    background:linear-gradient(180deg,#14110B 72%,rgba(20,17,11,0));padding-top:4px;z-index:9}
   .tabs button{border:.5px solid var(--line);background:var(--surface);color:var(--t2);border-radius:11px;
     padding:9px 2px;cursor:pointer;font:600 12.5px/1.1 var(--font);transition:.15s}
   .tabs button.on{border-color:var(--ac);background:var(--acb);color:var(--ac2)}
-
   .card{background:var(--surface);border-radius:14px;padding:13px;margin-bottom:12px}
   .card h2{font-size:15px;font-weight:600;margin:0 0 4px}
   .hint{font-size:12px;color:var(--t3);line-height:1.5;margin:0 0 4px}
@@ -54,40 +52,39 @@
   .mmss .c{color:var(--t3);font:700 16px/1 var(--mono)}
   .mmss .u{font-size:11px;color:var(--t3)}
   .btn{border:0;border-radius:10px;background:var(--surface2);color:var(--ac);font:600 14px/1 var(--font);padding:11px;cursor:pointer}
-  .btn.amber{background:var(--ac);color:var(--ac-on)}
-  .btn.full{width:100%}
-
-  .stage{position:relative;background:linear-gradient(180deg,#1A160E,#0F0D08);border:.5px solid var(--line);border-radius:16px;margin:12px 0}
+  .btn.amber{background:var(--ac);color:var(--ac-on)} .btn.full{width:100%}
+  .stage{position:relative;background:linear-gradient(180deg,#1A160E,#0F0D08);border:.5px solid var(--line);border-radius:16px;margin:0 0 12px}
   .stage svg{display:block;width:100%;height:auto}
-  .playbtn{position:absolute;right:10px;bottom:10px;border:0;border-radius:100px;background:var(--ac);color:var(--ac-on);
-    font:700 12.5px/1 var(--font);padding:9px 15px;cursor:pointer;display:flex;align-items:center;gap:6px}
-  .playbtn svg{width:12px;height:12px;fill:var(--ac-on)}
+  .playbtn{position:absolute;right:10px;bottom:10px;border:0;border-radius:100px;background:var(--surface2);color:var(--ac);
+    font:700 12px/1 var(--font);padding:8px 13px;cursor:pointer;display:flex;align-items:center;gap:6px}
+  .playbtn svg{width:11px;height:11px;fill:var(--ac)}
   .phaselab{position:absolute;left:10px;bottom:12px;font:700 12px/1 var(--mono);color:var(--ac2)}
-
+  .startbar{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+  .startbar .go{flex:1;font-size:15px;padding:13px}
+  .landline{font-size:12px;color:var(--t2);margin-bottom:8px}
+  .landline b{color:var(--ac2)}
   .rally{background:var(--surface2);border-radius:11px;padding:10px;margin-bottom:8px}
-  .rally .r1{display:flex;gap:7px;align-items:center;margin-bottom:7px}
+  .rally .r1{display:flex;gap:7px;align-items:center;margin-bottom:8px}
   .rally .r1 input{font-size:14px;padding:8px}
-  .rally .nm{flex:2} .rally .al{flex:1.3}
-  .rally .role{flex:0 0 auto;width:84px;font-size:13px;padding:8px 6px}
-  .rally .del{flex:0 0 auto;width:32px;height:34px;background:transparent;color:var(--bad);border:0;font-size:18px;cursor:pointer}
-  .rally .r2{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .rally .nm{flex:1} .rally .role{flex:0 0 auto;width:86px;font-size:13px;padding:8px 6px}
+  .rally .del{flex:0 0 auto;width:30px;height:34px;background:transparent;color:var(--bad);border:0;font-size:18px;cursor:pointer}
+  .rally .r2{display:flex;gap:8px;align-items:center}
   .rally .jn{width:100%;font-size:13px;padding:8px;margin-top:7px}
-
-  .seqitem{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:.5px solid var(--line)}
+  .seqitem{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:.5px solid var(--line)}
   .seqitem:last-child{border:0}
-  .seqitem .idx{width:24px;height:24px;border-radius:7px;background:var(--acb);color:var(--ac2);font:700 12px/1 var(--mono);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .seqitem.lit{background:var(--acb);margin:0 -8px;padding:11px 8px;border-radius:9px;border:0}
+  .seqitem .idx{width:26px;height:26px;border-radius:8px;background:var(--surface2);color:var(--ac2);font:800 13px/1 var(--mono);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .seqitem.lit .idx{background:var(--ac);color:var(--ac-on)}
   .seqitem .info{flex:1;min-width:0}
-  .seqitem .info .t{font:600 14px/1.2 var(--font);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .seqitem .info .t{font:600 14px/1.2 var(--font)}
   .seqitem .info .s{font-size:11.5px;color:var(--t3);margin-top:2px}
-  .seqitem .cd{text-align:right;font:800 16px/1 var(--mono);flex:0 0 auto}
-  .tag{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:600}
+  .seqitem .cd{text-align:right;font:800 16px/1 var(--mono);flex:0 0 auto;min-width:62px}
+  .tag{font-size:10px;padding:1px 6px;border-radius:6px;font-weight:600;margin-left:4px}
   .tag.drain{background:var(--surface);color:var(--t2)} .tag.cap{background:var(--acb);color:var(--ac2)}
   .tag.gar{background:var(--ok-bg);color:var(--ok)} .tag.tur{background:var(--blue-bg);color:var(--blue)}
-
   .struct{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:.5px solid var(--line)}
   .struct:last-child{border:0}
   .struct .ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:0 0 auto;background:var(--surface2)}
-  .struct .nm{flex:1;font-size:14px;font-weight:600}
   .struct .sideseg{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:2px}
   .struct .sideseg button{border:0;background:transparent;color:var(--t3);font:600 11px/1 var(--font);padding:6px 8px;border-radius:6px;cursor:pointer}
   .struct .sideseg button.on.mine{background:var(--ok);color:#08260f} .struct .sideseg button.on.foe{background:var(--bad);color:#fff}
@@ -95,17 +92,15 @@
   .buffbox.good{background:var(--ok-bg)} .buffbox.bad{background:var(--bad-bg)}
   .buffbox .big{font:800 26px/1 var(--mono);margin:4px 0}
   .buffbox.good .big{color:var(--ok)} .buffbox.bad .big{color:var(--bad)}
-
   .verdict{border-radius:13px;padding:14px;text-align:center;margin-top:12px}
   .verdict.ok{background:var(--ok-bg)} .verdict.warn{background:var(--acb)} .verdict.bad{background:var(--bad-bg)}
   .verdict .hl{font:800 13px/1 var(--font)} .verdict.ok .hl{color:var(--ok)} .verdict.warn .hl{color:var(--ac2)} .verdict.bad .hl{color:var(--bad)}
   .verdict .big{font:800 34px/1 var(--mono);margin:8px 0 4px} .verdict .s{font-size:12.5px;color:var(--t2)}
-
   ul.play{margin:8px 0 0;padding-left:17px} ul.play li{margin:9px 0;font-size:13.5px;color:var(--t2);line-height:1.55}
   ul.play li b{color:var(--tx)} ul.play li .k{color:var(--ac2);font-weight:600}
   .foot{font-size:10.5px;color:var(--t3);text-align:center;margin-top:16px;line-height:1.6}
   .hide{display:none!important}
-  textarea{width:100%;background:var(--surface2);border:.5px solid var(--line);color:var(--tx);border-radius:9px;padding:9px;font:400 12px/1.5 var(--mono);min-height:96px;resize:vertical}
+  textarea{width:100%;background:var(--surface2);border:.5px solid var(--line);color:var(--tx);border-radius:9px;padding:9px;font:400 12px/1.5 var(--mono);min-height:104px;resize:vertical}
   @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -131,48 +126,37 @@
 
   <!-- ============ 同步集结 ============ -->
   <section id="sync">
-    <div class="card">
-      <h2>同步集结：让所有车同一秒砸到王城</h2>
-      <p class="hint">王城靠多车 1–5 秒内同时命中拿下（防守方来不及补/治疗）。填好每辆车「到王城的行军」，下面自动算出<b>每辆车几点开集结</b>——最远的先发。</p>
-      <div class="lab">统一命中时刻</div>
-      <div class="seg" id="impMode"><button data-m="abs" class="on">UTC 时刻</button><button data-m="rel">从现在 +</button></div>
-      <div id="impAbs" class="row" style="margin-top:8px">
-        <div class="mmss"><input id="ih" type="number" min="0" max="23" value="12"><span class="c">:</span>
-          <input id="im" type="number" min="0" max="59" value="00"><span class="c">:</span>
-          <input id="is" type="number" min="0" max="59" value="00"><span class="u">UTC</span></div>
-      </div>
-      <div id="impRel" class="row hide" style="margin-top:8px">
-        <div class="mmss"><input id="irm" type="number" min="0" value="10"><span class="u">分</span><span class="c">:</span>
-          <input id="irs" type="number" min="0" max="59" value="00"><span class="u">秒</span></div>
-      </div>
-      <div class="lab">集结准备时间（车头开集结到出发，可改）</div>
-      <div class="mmss"><input id="pm" type="number" min="0" value="5"><span class="u">分</span><span class="c">:</span>
-        <input id="ps" type="number" min="0" max="59" value="00"><span class="u">秒</span></div>
+    <div class="card" style="padding:11px 13px">
+      <p class="hint" style="margin:0">只填每辆车<b>到王城的行军时间</b>。最远的车先发，其它车按行军差晚发——所有车同一秒砸到王城，防守方来不及补兵。喊话的人按下「开始发车」，到点哪辆车就亮起。</p>
     </div>
 
     <div class="stage">
-      <svg viewBox="0 0 360 188" id="svg"></svg>
+      <svg viewBox="0 0 360 180" id="svg"></svg>
       <div class="phaselab" id="phaselab"></div>
-      <button class="playbtn" id="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>播放</button>
+      <button class="playbtn" id="play"><svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>看演示</button>
     </div>
 
     <div class="card">
-      <h2>发车序列 <span style="font-weight:400;font-size:12px;color:var(--t3)">（最远先发，全部同时命中）</span></h2>
+      <div class="startbar">
+        <button class="btn amber go" id="startBtn">▶ 开始发车</button>
+        <button class="btn" id="resetBtn" style="width:84px">重置</button>
+      </div>
+      <div class="landline" id="landline"></div>
       <div id="seq"></div>
     </div>
 
     <div class="card">
-      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">车队名单</h2>
-        <button class="btn" id="addRally">＋ 加一辆车</button></div>
+      <div class="row" style="justify-content:space-between;align-items:center"><h2 style="margin:0">车队</h2>
+        <button class="btn" id="addRally">＋ 加车</button></div>
       <div id="rallies" style="margin-top:10px"></div>
     </div>
 
     <div class="card">
-      <h2>发布作战令</h2>
-      <p class="hint">把链接发到王国/各联盟 Discord——所有人点开就看到发车序列和自己那辆车的倒计时。</p>
+      <h2>发给全王国</h2>
+      <p class="hint">把链接发到 Discord/王国频道——所有人点开就看到发车顺序和各自延迟。</p>
       <div class="row" style="gap:8px;margin-bottom:8px">
-        <button class="btn amber full" id="copyLink">📋 复制计划链接</button>
-        <button class="btn full" id="copyOrder">复制作战令文本</button>
+        <button class="btn amber full" id="copyLink">📋 复制链接</button>
+        <button class="btn full" id="copyOrder">复制发车令</button>
       </div>
       <textarea id="orderText" readonly></textarea>
     </div>
@@ -182,7 +166,7 @@
   <section id="turret" class="hide">
     <div class="card">
       <h2>5 个结构：王城 + 4 炮塔</h2>
-      <p class="hint">炮塔是胜负关键。<b>敌方</b>持有的炮塔每轮打掉守军约 2%（4 座共 ~8%，越拖越快）；<b>我方</b>持有则不打城、反而给城内全军 <b>+杀伤</b>（1/2/3/4 座 = +8/12/15/20%）。所以——<b>先抢炮塔，再守城</b>。把每个结构分给一个联盟/队伍。</p>
+      <p class="hint"><b>敌方</b>炮塔每轮打掉守军约 2%（4 座 ~8%，越拖越快）；<b>我方</b>炮塔不打城、反而给城内全军 <b>+杀伤</b>（1/2/3/4 座 = +8/12/15/20%）。<b>先抢炮塔再守城</b>。每个结构分给一个联盟。</p>
       <div id="structs" style="margin-top:6px"></div>
       <div class="buffbox" id="buffbox"><div class="hl" id="buffhl">—</div><div class="big" id="buffbig">—</div><div class="s" id="buffs">—</div></div>
     </div>
@@ -197,11 +181,9 @@
   <section id="defend" class="hide">
     <div class="card">
       <h2>守城补兵：在敌人这波命中前把兵补进去</h2>
-      <p class="hint">守城靠不断补兵、不留空档。补兵<b>带纯兵不带英雄</b>（英雄不进守军阵容），优先步兵；让最强账号驻守当防守队长。下面算你这波补兵<b>最晚几点发</b>才能在敌人命中前进城。</p>
-      <div class="lab">敌方下一波命中（倒计时或 UTC）</div>
-      <div class="seg" id="defMode"><button data-m="rel" class="on">还有</button><button data-m="abs">UTC 时刻</button></div>
-      <div id="defRel" class="mmss" style="margin-top:8px"><input id="dhm" type="number" min="0" value="3"><span class="u">分</span><span class="c">:</span><input id="dhs" type="number" min="0" max="59" value="00"><span class="u">秒</span></div>
-      <div id="defAbs" class="mmss hide" style="margin-top:8px"><input id="dah" type="number" min="0" max="23" value="12"><span class="c">:</span><input id="dam" type="number" min="0" max="59" value="30"><span class="c">:</span><input id="das" type="number" min="0" max="59" value="00"><span class="u">UTC</span></div>
+      <p class="hint">补兵<b>带纯兵不带英雄</b>（英雄不进守军阵容），优先步兵；最强账号驻守当防守队长。下面算你这波<b>最晚几点发</b>才能在命中前进城。</p>
+      <div class="lab">敌方下一波命中</div>
+      <div class="mmss"><input id="dhm" type="number" min="0" value="3"><span class="u">分</span><span class="c">:</span><input id="dhs" type="number" min="0" max="59" value="00"><span class="u">秒后</span></div>
       <div class="lab">我到王城的行军时间</div>
       <div class="mmss"><input id="dmm" type="number" min="0" value="1"><span class="u">分</span><span class="c">:</span><input id="dms" type="number" min="0" max="59" value="30"><span class="u">秒</span></div>
       <div class="verdict ok" id="defRes"><div class="hl">—</div><div class="big tnum">—</div><div class="s">—</div></div>
@@ -213,16 +195,16 @@
     <div class="card">
       <h2>王城战最佳打法（社区实战 + 官方规则）</h2>
       <ul class="play">
-        <li><span class="k">同步命中</span>：多辆车在 <b>1–5 秒</b>内砸到王城，防守方就来不及补/治疗。靠把每辆车的行军差错开发车——<b>最远的先发</b>，下面「同步集结」帮你算。</li>
-        <li><span class="k">三连车</span>：<b>消耗车</b>（杀伤英雄，多半失败但削守军）→ <b>夺取车</b>（最强账号拿下）→ <b>驻守车</b>（命中后~5 秒，换上驻守英雄；夺取成功后记得撤回攻击英雄）。</li>
-        <li><span class="k">先拿 4 炮塔</span>：敌炮塔每轮 -2%（4 座 -8%，越拖越快）；我方全占 = 城内 <b>+20% 杀伤</b> 且止血。2、3 号强号去守炮塔，最强号留着砸城。</li>
-        <li><span class="k">不断补兵</span>：守城带<b>纯兵不带英雄</b>，步兵优先，不留空档。守军会被打进医院，满了才真死。</li>
-        <li><span class="k">最强号驻守</span>：被打时系统自动用<b>城内战力最高</b>的人当防守队长，确保最强号在城里。</li>
-        <li><span class="k">一人只能占一个结构</span>：在集结/驻守/炮塔里的人锁住，不能再派别的——所以要<b>分工</b>（一个联盟砸城、一个联盟拿炮塔）。超额 march 会把队友挤出名额。</li>
-        <li><span class="k">怎么算赢</span>：<b>连续占城 3 小时</b>直接赢；否则 <b>6 小时（12:00–18:00 UTC）累计占领最久</b>者赢。占领按 <b>战力 × 时间</b>计分（1 分 / 1000 战力 / 60 秒），所以把高战力的兵堆进城既守又得分。占领时间<b>按联盟统计</b>——要么集中喂给一个守城联盟连占 3 小时，要么 NAP 轮换分奖励。</li>
+        <li><span class="k">同步命中</span>：多辆车在 <b>1–5 秒</b>内砸到王城，防守方就来不及补/治疗。靠错峰发车——<b>最远的先发</b>（「同步集结」帮你算每辆车晚发几秒）。</li>
+        <li><span class="k">三连车</span>：<b>消耗车</b>（杀伤英雄，多半失败但削守军）→ <b>夺取车</b>（最强号拿下）→ <b>驻守车</b>（命中后~5 秒换驻守英雄；夺取后撤回攻击英雄）。</li>
+        <li><span class="k">先拿 4 炮塔</span>：敌炮塔每轮 -2%/座（越拖越快）；我方全占 = 城内 <b>+20% 杀伤</b>且止血。2、3 号强号守炮塔，最强号砸城。</li>
+        <li><span class="k">不断补兵</span>：守城带<b>纯兵不带英雄</b>，步兵优先，不留空档。守军先进医院，满了才真死。</li>
+        <li><span class="k">最强号驻守</span>：被打时系统自动用<b>城内战力最高</b>的人当防守队长——确保最强号在城里。</li>
+        <li><span class="k">一人只占一个结构</span>：在集结/驻守/炮塔里的人锁住，不能再派别的——所以要<b>分工</b>（一联盟砸城、一联盟拿炮塔）；超额 march 会挤掉队友名额。</li>
+        <li><span class="k">怎么算赢</span>：<b>连占 3 小时</b>直接赢；否则 <b>6 小时（12:00–18:00 UTC）累计占领最久</b>者赢。占领按 <b>战力 × 时间</b>计分。占领按<b>联盟</b>统计——要么集中喂一个守城联盟，要么 NAP 轮换分奖励。</li>
         <li><span class="k">常见翻车</span>：发车不同步、无视炮塔、超额 march 锁人、攻击英雄留守、不补兵。<b>输赢往往是组织，不是战力。</b></li>
       </ul>
-      <p class="foot">规则参考官方帮助中心 + 多个社区攻略（kingshothandbook / kingshotmastery / kingshotguides / grindnstrat / kingshotdata 等）。<b>行军/准备时间随距离与加速变化，请在游戏里实测</b>。本工具为 1406 玩家自制、非官方、与 Century Games 无关。</p>
+      <p class="foot">规则参考官方帮助中心 + 多个社区攻略。<b>行军时间随距离与加速变化，请游戏内实测</b>。本工具为 1406 玩家自制、非官方、与 Century Games 无关。</p>
     </div>
   </section>
 </div>
@@ -231,266 +213,173 @@
 (function(){
 "use strict";
 var $=function(i){return document.getElementById(i);},NS="http://www.w3.org/2000/svg";
-var C={ac:"#E9A82E",ac2:"#FFC558",ok:"#36D17A",bad:"#FF5247",blue:"#5BA8FF",t3:"rgba(250,240,220,.34)",surf2:"#2C2616"};
-var ROLES=[["drain","消耗"],["cap","夺取"],["gar","驻守"],["tur","炮塔"]];
-var ROLECOL={drain:C.t3,cap:C.ac,gar:C.ok,tur:C.blue};
+var C={ac:"#E9A82E",ac2:"#FFC558",ok:"#36D17A",bad:"#FF5247",blue:"#5BA8FF",t3:"rgba(250,240,220,.34)"};
+var ROLES=[["cap","夺取"],["drain","消耗"],["gar","驻守"],["tur","炮塔"]];
+var RCOL={drain:C.t3,cap:C.ac,gar:C.ok,tur:C.blue};
+function rname(r){return ROLES.filter(function(o){return o[0]===r;})[0];}
 
-/* ---------- state ---------- */
-var st={
-  impMode:"abs", prep:300,
-  rallies:[],
-  mode:"conquest",
-  structs:[{n:"王城",holder:"",side:"mine"},{n:"炮塔 1",holder:"",side:"foe"},{n:"炮塔 2",holder:"",side:"foe"},{n:"炮塔 3",holder:"",side:"foe"},{n:"炮塔 4",holder:"",side:"foe"}]
-};
-var uid=1;
-function newRally(n,al,role,mm,ss,jn){return {id:uid++,name:n||"",alliance:al||"",role:role||"cap",mm:mm||0,ss:ss==null?0:ss,jn:jn||""};}
-
-/* ---------- time helpers ---------- */
+var st={ rallies:[], mode:"conquest",
+  structs:[{n:"王城",holder:"",side:"mine"},{n:"炮塔 1",holder:"",side:"foe"},{n:"炮塔 2",holder:"",side:"foe"},{n:"炮塔 3",holder:"",side:"foe"},{n:"炮塔 4",holder:"",side:"foe"}] };
+var callerT0=null, uid=1;
+function newR(n,role,mm,ss,jn){return {id:uid++,name:n||"",role:role||"cap",mm:mm||0,ss:ss==null?0:ss,jn:jn||""};}
+function march(r){return r.mm*60+r.ss;}
 function pad(n){return (n<10?"0":"")+n;}
-function impactMs(){
-  var now=Date.now();
-  if(st.impMode==="rel"){var s=(+$("irm").value||0)*60+(+$("irs").value||0);return now+s*1000;}
-  var h=+$("ih").value||0,m=+$("im").value||0,s=+$("is").value||0;
-  var d=new Date();var t=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),h,m,s);
-  if(t<=now-1000)t+=86400000;return t;
-}
-function prepSec(){return Math.max(0,(+$("pm").value||0)*60+(+$("ps").value||0));}
+function fmt(s){s=Math.round(s);var sg=s<0?"-":"";s=Math.abs(s);var m=Math.floor(s/60);s%=60;return sg+(m>0?m+"分":"")+(s<10&&m>0?"0":"")+s+"秒";}
 function clk(ms){var d=new Date(ms);return pad(d.getUTCHours())+":"+pad(d.getUTCMinutes())+":"+pad(d.getUTCSeconds());}
-function lclk(ms){var d=new Date(ms);return pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());}
-function fmt(s){s=Math.round(s);var sign=s<0?"-":"";s=Math.abs(s);var m=Math.floor(s/60);s%=60;return sign+(m>0?m+"分":"")+(s<10&&m>0?"0":"")+s+"秒";}
-function marchOf(r){return r.mm*60+r.ss;}
+function esc(s){return (s||"").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
 
-/* ---------- rally list UI ---------- */
+/* ---------- car list ---------- */
 function renderRallies(){
   var box=$("rallies");box.innerHTML="";
   st.rallies.forEach(function(r,i){
     var el=document.createElement("div");el.className="rally";
-    el.innerHTML=
-      '<div class="r1">'+
-        '<input class="nm" placeholder="车头名" value="'+esc(r.name)+'" data-k="name">'+
-        '<input class="al" placeholder="联盟" value="'+esc(r.alliance)+'" data-k="alliance">'+
-        '<select class="role" data-k="role">'+ROLES.map(function(o){return '<option value="'+o[0]+'"'+(r.role===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>'+
-        '<button class="del" data-del="1">×</button>'+
-      '</div>'+
-      '<div class="r2"><span style="font-size:12px;color:var(--t2)">到王城行军</span>'+
-        '<span class="mmss"><input type="number" min="0" value="'+r.mm+'" data-k="mm" style="width:48px;text-align:center;font-family:var(--mono)"><span class="u">分</span><span class="c">:</span>'+
-        '<input type="number" min="0" max="59" value="'+pad(r.ss)+'" data-k="ss" style="width:48px;text-align:center;font-family:var(--mono)"><span class="u">秒</span></span>'+
-      '</div>'+
-      '<input class="jn" placeholder="加入者名单（可选，用顿号分隔）" value="'+esc(r.jn)+'" data-k="jn">';
-    el.addEventListener("input",function(e){var k=e.target.getAttribute("data-k");if(!k)return;
-      var v=e.target.value; if(k==="mm")v=+v||0; if(k==="ss")v=Math.min(59,+v||0); r[k]=v; recompute();});
-    el.querySelector("[data-del]").addEventListener("click",function(){st.rallies.splice(i,1);renderRallies();recompute();});
+    el.innerHTML='<div class="r1">'+
+      '<input class="nm" placeholder="车头名(可选)" value="'+esc(r.name)+'" data-k="name">'+
+      '<select class="role" data-k="role">'+ROLES.map(function(o){return '<option value="'+o[0]+'"'+(r.role===o[0]?' selected':'')+'>'+o[1]+'</option>';}).join('')+'</select>'+
+      '<button class="del">×</button></div>'+
+      '<div class="r2"><span style="font-size:12.5px;color:var(--t2)">到王城行军</span>'+
+        '<span class="mmss"><input type="number" min="0" value="'+r.mm+'" data-k="mm" style="width:50px;text-align:center;font-family:var(--mono)"><span class="u">分</span><span class="c">:</span>'+
+        '<input type="number" min="0" max="59" value="'+pad(r.ss)+'" data-k="ss" style="width:50px;text-align:center;font-family:var(--mono)"><span class="u">秒</span></span></div>'+
+      '<input class="jn" placeholder="加入者名单(可选, 顿号分隔)" value="'+esc(r.jn)+'" data-k="jn">';
+    el.addEventListener("input",function(e){var k=e.target.getAttribute("data-k");if(!k)return;var v=e.target.value;
+      if(k==="mm")v=Math.max(0,+v||0); if(k==="ss")v=Math.min(59,Math.max(0,+v||0)); r[k]=v; recompute();});
+    el.querySelector(".del").addEventListener("click",function(){st.rallies.splice(i,1);renderRallies();recompute();});
     box.appendChild(el);
   });
 }
-function esc(s){return (s||"").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
 
-/* ---------- SVG sync stage ---------- */
-function buildStage(){
-  var svg=$("svg");svg.innerHTML="";
-  var cx=180,cy=96;
-  // castle
+/* ---------- SVG ---------- */
+function buildStage(){var svg=$("svg");svg.innerHTML="";var cx=180,cy=92;
   var ring=document.createElementNS(NS,"circle");ring.setAttribute("cx",cx);ring.setAttribute("cy",cy);ring.setAttribute("r",18);
   ring.setAttribute("fill","rgba(233,168,46,.12)");ring.setAttribute("stroke",C.ac);ring.setAttribute("stroke-width","2");svg.appendChild(ring);
-  var lab=document.createElementNS(NS,"text");lab.setAttribute("x",cx);lab.setAttribute("y",cy+34);lab.setAttribute("text-anchor","middle");
+  var lab=document.createElementNS(NS,"text");lab.setAttribute("x",cx);lab.setAttribute("y",cy+33);lab.setAttribute("text-anchor","middle");
   lab.setAttribute("fill",C.ac2);lab.setAttribute("font-size","11");lab.setAttribute("font-weight","700");lab.textContent="王城";svg.appendChild(lab);
   var imp=document.createElementNS(NS,"circle");imp.setAttribute("id","impact");imp.setAttribute("cx",cx);imp.setAttribute("cy",cy);imp.setAttribute("fill","none");imp.setAttribute("stroke",C.ac2);imp.setAttribute("stroke-width","3");imp.setAttribute("opacity","0");svg.appendChild(imp);
-  svg._cx=cx;svg._cy=cy;
-}
-function layoutArmies(){
-  var svg=$("svg"),cx=svg._cx,cy=svg._cy;
-  // remove old army groups
+  svg._cx=cx;svg._cy=cy;}
+function layoutArmies(){var svg=$("svg"),cx=svg._cx,cy=svg._cy;
   Array.prototype.slice.call(svg.querySelectorAll(".army")).forEach(function(n){n.remove();});
-  var rs=st.rallies, n=rs.length; if(!n) return;
-  var maxM=Math.max.apply(null,rs.map(marchOf).concat([1]));
-  rs.forEach(function(r,i){
-    var ang=Math.PI*(0.62 + 0.76*(n===1?0.5:i/(n-1))); // spread across upper arc 112deg..248deg-ish
-    var d=44+78*(marchOf(r)/maxM);
-    var ox=cx+Math.cos(ang)*d, oy=cy- Math.sin(ang)*d*0.78 - 6;
-    var col=ROLECOL[r.role]||C.ac;
-    var g=document.createElementNS(NS,"g");g.setAttribute("class","army");g.setAttribute("data-i",i);
-    var ln=document.createElementNS(NS,"line");ln.setAttribute("x1",ox);ln.setAttribute("y1",oy);ln.setAttribute("x2",ox);ln.setAttribute("y2",oy);
-    ln.setAttribute("stroke",col);ln.setAttribute("stroke-width","2.4");ln.setAttribute("stroke-linecap","round");ln.setAttribute("opacity",".9");ln.setAttribute("class","trail");g.appendChild(ln);
+  var rs=st.rallies,n=rs.length;if(!n)return;var maxM=Math.max.apply(null,rs.map(march).concat([1]));
+  rs.forEach(function(r,i){var ang=Math.PI*(0.6+0.8*(n===1?0.5:i/(n-1)));var d=42+80*(march(r)/maxM);
+    var ox=cx+Math.cos(ang)*d,oy=cy-Math.sin(ang)*d*0.74-4;var col=RCOL[r.role]||C.ac;
+    var g=document.createElementNS(NS,"g");g.setAttribute("class","army");
     var bg=document.createElementNS(NS,"line");bg.setAttribute("x1",ox);bg.setAttribute("y1",oy);bg.setAttribute("x2",cx);bg.setAttribute("y2",cy);
-    bg.setAttribute("stroke",col);bg.setAttribute("stroke-width","1.5");bg.setAttribute("stroke-dasharray","2 4");bg.setAttribute("opacity",".28");g.insertBefore(bg,ln);
+    bg.setAttribute("stroke",col);bg.setAttribute("stroke-width","1.5");bg.setAttribute("stroke-dasharray","2 4");bg.setAttribute("opacity",".28");g.appendChild(bg);
+    var ln=document.createElementNS(NS,"line");ln.setAttribute("x1",ox);ln.setAttribute("y1",oy);ln.setAttribute("x2",ox);ln.setAttribute("y2",oy);
+    ln.setAttribute("stroke",col);ln.setAttribute("stroke-width","2.4");ln.setAttribute("stroke-linecap","round");ln.setAttribute("class","trail");g.appendChild(ln);
     var tok=document.createElementNS(NS,"circle");tok.setAttribute("cx",ox);tok.setAttribute("cy",oy);tok.setAttribute("r",6);tok.setAttribute("fill",col);tok.setAttribute("class","tok");g.appendChild(tok);
-    g._ox=ox;g._oy=oy;g._march=marchOf(r);
-    svg.appendChild(g);
-  });
-}
+    g._ox=ox;g._oy=oy;g._march=march(r);svg.appendChild(g);});}
 
-/* ---------- sequence + compute ---------- */
+/* ---------- compute sequence (relative, march-only) ---------- */
 function recompute(){
-  var imp=impactMs(),prep=prepSec();
-  // sequence sorted by launch (earliest launch first => longest march)
-  var rows=st.rallies.map(function(r,i){var land=imp; var launch=land-(prep+marchOf(r))*1000; return {r:r,i:i,launch:launch,land:land};});
-  rows.sort(function(a,b){return a.launch-b.launch;});
-  var seq=$("seq");
-  if(!rows.length){seq.innerHTML='<p class="hint">加一辆车后，这里显示每辆车几点开集结。</p>';}
+  var rs=st.rallies.slice();
+  // order: longest march first
+  var rows=rs.map(function(r,i){return {r:r,i:i};}).sort(function(a,b){return march(b.r)-march(a.r);});
+  var base=rows.length?march(rows[0].r):0;
+  var now=Date.now();
+  var seq=$("seq"),land=$("landline");
+  if(!rows.length){seq.innerHTML='<p class="hint">点「＋ 加车」加入大鲸鱼，填行军时间即可。</p>';land.textContent="";}
   else{
-    var now=Date.now();
+    if(callerT0){var leftLand=callerT0+base*1000-now;land.innerHTML= leftLand>0? ('全部命中倒计时 <b>'+fmt(leftLand/1000)+'</b>'):'<b>已全部命中！</b>';}
+    else{land.innerHTML='全部命中：最远车发车后约 <b>'+fmt(base)+'</b>（按下「开始发车」开始实时倒计时）';}
     seq.innerHTML=rows.map(function(x,k){
-      var rl=ROLES.filter(function(o){return o[0]===x.r.role;})[0];
-      var left=x.launch-now; var cd,col;
-      if(left>0){cd=fmt(left/1000);col=left>20000?C.t3:C.ac2;} else if(left>-3000){cd="开!";col=C.ac;} else {cd="已发";col=C.t3;}
-      var tagc=x.r.role;
-      return '<div class="seqitem"><div class="idx">'+(k+1)+'</div>'+
-        '<div class="info"><div class="t">'+(esc(x.r.name)||"车头"+(k+1))+' <span class="tag '+tagc+'">'+(rl?rl[1]:"")+'</span> <span style="color:var(--t3);font-weight:400;font-size:11px">'+esc(x.r.alliance)+'</span></div>'+
-        '<div class="s">'+clk(x.launch)+' UTC 开集结 · 行军 '+fmt(marchOf(x.r))+(x.r.jn?(' · 加入: '+esc(x.r.jn)):'')+'</div></div>'+
+      var delay=base-march(x.r); var rl=rname(x.r.role); var lit=false,cd,col=C.t3;
+      if(callerT0){var launchAt=callerT0+delay*1000;var l=launchAt-now;
+        if(l>0){cd=fmt(l/1000);col=l<15000?C.ac2:C.t3;} else if(l>-3000){cd="开车!";col=C.ac;lit=true;} else {cd="已发";col=C.t3;}}
+      else{cd= delay===0?"最先发":("晚 "+fmt(delay));col= delay===0?C.ac2:C.t3;}
+      return '<div class="seqitem'+(lit?' lit':'')+'"><div class="idx">'+(k+1)+'</div>'+
+        '<div class="info"><div class="t">'+(esc(x.r.name)||("车"+(k+1)))+'<span class="tag '+x.r.role+'">'+(rl?rl[1]:"")+'</span></div>'+
+        '<div class="s">行军 '+fmt(march(x.r))+(delay>0?(' · 最远车后 '+fmt(delay)+' 发'):' · 最先发')+(x.r.jn?(' · '+esc(x.r.jn)):'')+'</div></div>'+
         '<div class="cd" style="color:'+col+'">'+cd+'</div></div>';
     }).join("");
   }
-  // impact summary line into phaselab when idle
-  if(!playing){ $("phaselab").textContent= rows.length? ("全部命中 "+clk(imp)+" UTC") : ""; }
-  layoutArmies();
-  buildOrderText(rows,imp,prep);
-  saveHash();
+  layoutArmies(); buildOrder(rows,base); saveHash();
 }
 
 /* ---------- order text ---------- */
-function buildOrderText(rows,imp,prep){
-  var lines=[];
-  lines.push("【1406 王城战 · 作战令】");
-  lines.push("统一命中 "+clk(imp)+" UTC（本地 "+lclk(imp)+"）· 准备 "+fmt(prep));
-  lines.push("模式 "+(st.mode==="conquest"?"全力夺取（连占3小时/累计最久）":"轮换分享 NAP"));
-  lines.push("");
-  lines.push("发车序列（最远先发，全部同时命中）：");
-  if(!rows.length)lines.push("（未排车）");
-  rows.forEach(function(x,k){var rl=ROLES.filter(function(o){return o[0]===x.r.role;})[0];
-    lines.push((k+1)+") "+clk(x.launch)+" 开集结 — "+(x.r.name||("车头"+(k+1)))+(x.r.alliance?("["+x.r.alliance+"]"):"")+" · "+(rl?rl[1]:"")+" · 行军"+fmt(marchOf(x.r))+(x.r.jn?(" · 加入:"+x.r.jn):""));});
-  // turrets
+function buildOrder(rows,base){
+  var L=["【1406 王城战 · 发车令】","按顺序开集结（最远先发，全部同时命中）："];
+  if(!rows.length)L.push("（未排车）");
+  rows.forEach(function(x,k){var rl=rname(x.r.role);var delay=base-march(x.r);
+    L.push((k+1)+") "+(x.r.name||("车"+(k+1)))+" · "+(rl?rl[1]:"")+" · 行军"+fmt(march(x.r))+" · "+(delay===0?"最先发":("最远车后 "+fmt(delay)+" 发"))+(x.r.jn?(" · 加入:"+x.r.jn):""));});
+  L.push("全部命中：最远车发车后约 "+fmt(base)+"。");
   var mine=st.structs.filter(function(s,i){return i>0&&s.side==="mine";}).length;
-  lines.push("");
-  lines.push("结构分配：");
-  st.structs.forEach(function(s){lines.push("· "+s.n+"："+(s.holder||"待分配")+" ["+(s.side==="mine"?"我方":"敌方")+"]");});
-  lines.push("我方炮塔 "+mine+"/4 → 城内 +"+([0,8,12,15,20][mine])+"% 杀伤");
-  lines.push("");
-  lines.push("打法：消耗→夺取→驻守(命中后~5秒)；先拿炮塔；纯兵补防不断档；最强号驻守。");
-  lines.push("计划链接见下方按钮 / 本页地址。");
-  $("orderText").value=lines.join("\n");
+  L.push("");L.push("炮塔：我方 "+mine+"/4 → 城内 +"+([0,8,12,15,20][mine])+"% 杀伤。");
+  L.push("打法：消耗→夺取→驻守(命中后~5秒)；先拿炮塔；纯兵补防不断档；最强号驻守。");
+  $("orderText").value=L.join("\n");
 }
 
 /* ---------- share hash ---------- */
 function enc(o){return btoa(unescape(encodeURIComponent(JSON.stringify(o))));}
 function dec(s){return JSON.parse(decodeURIComponent(escape(atob(s))));}
-function saveHash(){
-  var o={v:3,im:st.impMode,prep:st.prep,mode:st.mode,
-    imp:st.impMode==="abs"?[+$("ih").value,+$("im").value,+$("is").value]:[+$("irm").value,+$("irs").value],
-    r:st.rallies.map(function(r){return [r.name,r.alliance,r.role,r.mm,r.ss,r.jn];}),
-    s:st.structs.map(function(s){return [s.holder,s.side];})};
-  try{history.replaceState(null,"","#p="+enc(o));}catch(e){}
-}
-function loadHash(){
-  var m=location.hash.match(/p=([^&]+)/); if(!m) return false;
-  try{var o=dec(m[1]); if(!o)return false;
-    st.impMode=o.im||"abs"; st.prep=o.prep||300; st.mode=o.mode||"conquest";
-    $("pm").value=Math.floor(st.prep/60);$("ps").value=pad(st.prep%60);
-    if(o.im==="abs"){$("ih").value=o.imp[0];$("im").value=o.imp[1];$("is").value=o.imp[2];}
-    else{$("irm").value=o.imp[0];$("irs").value=o.imp[1];}
-    setSeg("impMode","m",st.impMode); $("impAbs").classList.toggle("hide",st.impMode!=="abs");$("impRel").classList.toggle("hide",st.impMode!=="rel");
-    st.rallies=(o.r||[]).map(function(a){return newRally(a[0],a[1],a[2],a[3],a[4],a[5]);});
-    if(o.s&&o.s.length===5){o.s.forEach(function(a,i){st.structs[i].holder=a[0];st.structs[i].side=a[1];});}
-    setSeg("modeSeg","v",st.mode);
-    return true;
-  }catch(e){return false;}
-}
-function setSeg(id,attr,val){var seg=$(id);if(!seg)return;seg.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-"+attr)===val);});}
+function saveHash(){try{history.replaceState(null,"","#p="+enc({v:4,mode:st.mode,
+  r:st.rallies.map(function(r){return [r.name,r.role,r.mm,r.ss,r.jn];}),
+  s:st.structs.map(function(s){return [s.holder,s.side];})}));}catch(e){}}
+function loadHash(){var m=location.hash.match(/p=([^&]+)/);if(!m)return false;
+  try{var o=dec(m[1]);if(!o)return false;st.mode=o.mode||"conquest";
+    st.rallies=(o.r||[]).map(function(a){return newR(a[0],a[1],a[2],a[3],a[4]);});
+    if(o.s&&o.s.length===5)o.s.forEach(function(a,i){st.structs[i].holder=a[0];st.structs[i].side=a[1];});
+    seg("modeSeg","v",st.mode);return true;}catch(e){return false;}}
+function seg(id,attr,val){var s=$(id);if(s)s.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-"+attr)===val);});}
 
-/* ---------- structures (turret) UI ---------- */
-function renderStructs(){
-  var box=$("structs");box.innerHTML="";
-  st.structs.forEach(function(s,i){
-    var el=document.createElement("div");el.className="struct";
-    var icon = i===0
-      ? '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+C.ac+'" stroke-width="2"><path d="M3 21V8l4-3 5 3 5-3 4 3v13z"/><path d="M9 21v-5h6v5"/></svg>'
-      : '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+C.blue+'" stroke-width="2"><path d="M8 21V5l4-2 4 2v16M6 21h12M9 9h6M9 13h6"/></svg>';
-    el.innerHTML='<div class="ico">'+icon+'</div>'+
-      '<input class="nm" placeholder="分配给…(联盟/队伍)" value="'+esc(s.holder)+'" data-k="holder" style="flex:1">'+
+/* ---------- turret ---------- */
+function renderStructs(){var box=$("structs");box.innerHTML="";
+  st.structs.forEach(function(s,i){var el=document.createElement("div");el.className="struct";
+    var icon=i===0?'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+C.ac+'" stroke-width="2"><path d="M3 21V8l4-3 5 3 5-3 4 3v13z"/><path d="M9 21v-5h6v5"/></svg>'
+      :'<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="'+C.blue+'" stroke-width="2"><path d="M8 21V5l4-2 4 2v16M6 21h12M9 9h6M9 13h6"/></svg>';
+    el.innerHTML='<div class="ico">'+icon+'</div><input placeholder="分配给…(联盟/队伍)" value="'+esc(s.holder)+'" style="flex:1">'+
       '<div class="sideseg"><button data-side="mine" class="'+(s.side==="mine"?"on mine":"")+'">我方</button><button data-side="foe" class="'+(s.side==="foe"?"on foe":"")+'">敌方</button></div>';
-    el.querySelector('[data-k="holder"]').addEventListener("input",function(e){s.holder=e.target.value;recompute();});
+    el.querySelector("input").addEventListener("input",function(e){s.holder=e.target.value;saveHash();});
     el.querySelectorAll("[data-side]").forEach(function(b){b.addEventListener("click",function(){s.side=b.getAttribute("data-side");
-      el.querySelectorAll("[data-side]").forEach(function(x){x.className=x.getAttribute("data-side")===s.side?("on "+(s.side==="mine"?"mine":"foe")):"";});buffBox();recompute();});});
-    box.appendChild(el);
-  });
-  buffBox();
-}
-function buffBox(){
-  var mine=0,foe=0;st.structs.forEach(function(s,i){if(i>0){if(s.side==="mine")mine++;else foe++;}});
-  var bb=$("buffbox");
-  if(mine>=foe){bb.className="buffbox good";$("buffhl").textContent="我方炮塔 "+mine+"/4";$("buffbig").textContent="+"+([0,8,12,15,20][mine])+"% 杀伤";
-    $("buffs").textContent= mine===4?"满炮塔！城内全军 +20% 杀伤且止血":"再拿 "+(4-mine)+" 座炮塔，城内 +"+([0,8,12,15,20][Math.min(4,mine+ (4-mine))])+"% 杀伤封顶";}
-  else{bb.className="buffbox bad";$("buffhl").textContent="敌方炮塔 "+foe+"/4";$("buffbig").textContent="-"+(foe*2)+"%/轮";
-    $("buffs").textContent="敌方炮塔在持续打掉你的守军（越拖越快）——优先抢回炮塔";}
-}
+      el.querySelectorAll("[data-side]").forEach(function(x){x.className=x.getAttribute("data-side")===s.side?("on "+s.side):"";});buffBox();saveHash();});});
+    box.appendChild(el);});buffBox();}
+function buffBox(){var mine=0,foe=0;st.structs.forEach(function(s,i){if(i>0){if(s.side==="mine")mine++;else foe++;}});
+  var bb=$("buffbox");if(mine>=foe){bb.className="buffbox good";$("buffhl").textContent="我方炮塔 "+mine+"/4";$("buffbig").textContent="+"+([0,8,12,15,20][mine])+"% 杀伤";
+    $("buffs").textContent=mine===4?"满炮塔！城内全军 +20% 杀伤且止血":(mine>0?"已止住这些炮塔的伤害；再拿炮塔加成更高":"先抢炮塔：我方持有可给城内加杀伤");}
+  else{bb.className="buffbox bad";$("buffhl").textContent="敌方炮塔 "+foe+"/4";$("buffbig").textContent="-"+(foe*2)+"%/轮";$("buffs").textContent="敌方炮塔在持续打掉守军（越拖越快）——优先抢回炮塔";}}
 
 /* ---------- defend ---------- */
-function defAnchor(){var now=Date.now();
-  if($("defRel").classList.contains("hide")){var h=+$("dah").value||0,m=+$("dam").value||0,s=+$("das").value||0;
-    var d=new Date();var t=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate(),h,m,s);if(t<=now-1000)t+=86400000;return t;}
-  var s2=(+$("dhm").value||0)*60+(+$("dhs").value||0);return now+s2*1000;}
-function recomputeDefend(){
-  var hit=defAnchor(),march=(+$("dmm").value||0)*60+(+$("dms").value||0),now=Date.now();
-  var sendBy=hit-march*1000; var res=$("defRes");var left=sendBy-now;var arriveNow=now+march*1000;
-  if(left>20000){res.className="verdict ok";res.querySelector(".hl").textContent="还有时间";res.querySelector(".big").textContent=fmt(left/1000);res.querySelector(".s").textContent="最晚 "+clk(sendBy)+" UTC 发兵（纯兵）就能在命中前进城";}
-  else if(left>0){res.className="verdict warn";res.querySelector(".hl").textContent="马上发兵";res.querySelector(".big").textContent=fmt(left/1000);res.querySelector(".s").textContent="只剩这点余量，立刻发纯兵补防";}
-  else if(arriveNow<=hit){res.className="verdict warn";res.querySelector(".hl").textContent="立刻发！";res.querySelector(".big").textContent="GO";res.querySelector(".s").textContent="现在发还能赶在命中前到，但没余量了";}
-  else{res.className="verdict bad";res.querySelector(".hl").textContent="赶不上这波";res.querySelector(".big").textContent=fmt((arriveNow-hit)/1000);res.querySelector(".s").textContent="现在发也会晚到——准备下一波，或让更近的队友补";}
-}
+function recomputeDefend(){var hit=Date.now()+((+$("dhm").value||0)*60+(+$("dhs").value||0))*1000;
+  var mar=(+$("dmm").value||0)*60+(+$("dms").value||0),now=Date.now(),sendBy=hit-mar*1000,left=sendBy-now,arrive=now+mar*1000,res=$("defRes");
+  if(left>20000){res.className="verdict ok";res.querySelector(".hl").textContent="还有时间";res.querySelector(".big").textContent=fmt(left/1000);res.querySelector(".s").textContent="最晚 "+clk(sendBy)+" UTC 发纯兵就能在命中前进城";}
+  else if(left>0){res.className="verdict warn";res.querySelector(".hl").textContent="马上发兵";res.querySelector(".big").textContent=fmt(left/1000);res.querySelector(".s").textContent="只剩这点余量，立刻发纯兵";}
+  else if(arrive<=hit){res.className="verdict warn";res.querySelector(".hl").textContent="立刻发！";res.querySelector(".big").textContent="GO";res.querySelector(".s").textContent="现在发还能赶在命中前到，但没余量了";}
+  else{res.className="verdict bad";res.querySelector(".hl").textContent="赶不上这波";res.querySelector(".big").textContent=fmt((arrive-hit)/1000);res.querySelector(".s").textContent="现在发也会晚到——准备下一波或让更近的队友补";}}
 
-/* ---------- play animation ---------- */
+/* ---------- demo animation ---------- */
 var playing=false,raf=null;
-function playAnim(){
-  if(!st.rallies.length)return; if(raf)cancelAnimationFrame(raf);
-  playing=true;var svg=$("svg"),cx=svg._cx,cy=svg._cy,imp=$("impact");
-  var groups=Array.prototype.slice.call(svg.querySelectorAll(".army"));
-  var maxM=Math.max.apply(null,st.rallies.map(marchOf).concat([1]));
-  var TLAND=4200, scale=TLAND/Math.max(maxM,1); // ms playback for the longest march
-  groups.forEach(function(g){g._play=g._march*scale;});
-  imp.setAttribute("opacity","0");imp.setAttribute("r","4");
-  var t0=performance.now();
-  function run(now){var e=now-t0;
-    groups.forEach(function(g){var start=TLAND-g._play; var p=e<start?0:Math.min(1,(e-start)/g._play);
-      var x=g._ox+(cx-g._ox)*p, y=g._oy+(cy-g._oy)*p;
-      var tok=g.querySelector(".tok"),tr=g.querySelector(".trail");
-      tok.setAttribute("cx",x);tok.setAttribute("cy",y);tr.setAttribute("x2",x);tr.setAttribute("y2",y);});
-    var sec=Math.max(0,(TLAND-e)/1000*(maxM/4.2));
-    $("phaselab").textContent= e<TLAND? ("同时命中倒计时 "+fmt((TLAND-e)/scale)) : "全部命中！";
-    if(e>=TLAND){flash(imp);setTimeout(function(){playing=false;$("phaselab").textContent="全部命中 "+clk(impactMs())+" UTC";layoutArmies();},1400);return;}
-    raf=requestAnimationFrame(run);
-  }
-  raf=requestAnimationFrame(run);
-}
+function playAnim(){if(!st.rallies.length)return;if(raf)cancelAnimationFrame(raf);playing=true;
+  var svg=$("svg"),cx=svg._cx,cy=svg._cy,imp=$("impact");var groups=Array.prototype.slice.call(svg.querySelectorAll(".army"));
+  var maxM=Math.max.apply(null,st.rallies.map(march).concat([1])),TLAND=3800,scale=TLAND/Math.max(maxM,1);
+  groups.forEach(function(g){g._play=g._march*scale;});imp.setAttribute("opacity","0");imp.setAttribute("r","4");var t0=performance.now();
+  function run(now){var e=now-t0;groups.forEach(function(g){var start=TLAND-g._play;var p=e<start?0:Math.min(1,(e-start)/g._play);
+    var x=g._ox+(cx-g._ox)*p,y=g._oy+(cy-g._oy)*p;g.querySelector(".tok").setAttribute("cx",x);g.querySelector(".tok").setAttribute("cy",y);
+    g.querySelector(".trail").setAttribute("x2",x);g.querySelector(".trail").setAttribute("y2",y);});
+    $("phaselab").textContent=e<TLAND?("同时命中倒计时 "+fmt((TLAND-e)/scale)):"全部命中！";
+    if(e>=TLAND){flash(imp);setTimeout(function(){playing=false;$("phaselab").textContent="";layoutArmies();},1300);return;}raf=requestAnimationFrame(run);}
+  raf=requestAnimationFrame(run);}
 function flash(im){var r=6,o=1;im.setAttribute("opacity","1");(function g(){r+=2.6;o-=.045;im.setAttribute("r",r);im.setAttribute("opacity",Math.max(0,o));if(o>0)requestAnimationFrame(g);})();}
 
-/* ---------- clock + phase ---------- */
+/* ---------- clock ---------- */
 function tick(){var d=new Date();$("utc").textContent=pad(d.getUTCHours())+":"+pad(d.getUTCMinutes())+":"+pad(d.getUTCSeconds());
-  $("loc").textContent=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
-  var h=d.getUTCHours();$("cstat").textContent= (h>=12&&h<18)?"城堡战进行中":(h>=10&&h<22)?"战斗阶段中":"未开始";
-  if($("sync").classList.contains("hide")===false&&!playing) updateSeqCountdowns();
-  if($("defend").classList.contains("hide")===false) recomputeDefend();
-}
-function updateSeqCountdowns(){ // light per-tick refresh of countdowns only
-  recompute();
-}
+  $("loc").textContent=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());var h=d.getUTCHours();
+  $("cstat").textContent=(h>=12&&h<18)?"城堡战进行中":(h>=10&&h<22)?"战斗阶段中":"未开始";
+  if(!$("sync").classList.contains("hide")&&!playing&&callerT0)recompute();
+  if(!$("defend").classList.contains("hide"))recomputeDefend();}
 
 /* ---------- wire ---------- */
-$("impMode").addEventListener("click",function(e){var b=e.target.closest("[data-m]");if(!b)return;st.impMode=b.dataset.m;
-  setSeg("impMode","m",st.impMode);$("impAbs").classList.toggle("hide",st.impMode!=="abs");$("impRel").classList.toggle("hide",st.impMode!=="rel");recompute();});
-["ih","im","is","irm","irs","pm","ps"].forEach(function(id){$(id).addEventListener("input",function(){st.prep=prepSec();recompute();});});
-$("addRally").addEventListener("click",function(){st.rallies.push(newRally("","","cap",3,0,""));renderRallies();recompute();});
+$("addRally").addEventListener("click",function(){st.rallies.push(newR("","cap",3,0,""));renderRallies();recompute();});
 $("play").addEventListener("click",playAnim);
-$("copyLink").addEventListener("click",function(){copy(location.href,this,"📋 复制计划链接");});
-$("copyOrder").addEventListener("click",function(){copy($("orderText").value,this,"复制作战令文本");});
-$("modeSeg").addEventListener("click",function(e){var b=e.target.closest("[data-v]");if(!b)return;st.mode=b.dataset.v;setSeg("modeSeg","v",st.mode);
-  $("modeHint").textContent= st.mode==="conquest"?"全力夺取：把占领时间集中喂给一个守城联盟，连占 3 小时直接赢（或 6 小时累计最久）。":"轮换分享：各联盟 R5 约定 NAP，故意在 3 小时前放城让计时重置，按时段轮换王城/炮塔，让更多人拿到个人奖励。";recompute();});
-$("defMode").addEventListener("click",function(e){var b=e.target.closest("[data-m]");if(!b)return;
-  setSeg("defMode","m",b.dataset.m);$("defRel").classList.toggle("hide",b.dataset.m!=="rel");$("defAbs").classList.toggle("hide",b.dataset.m!=="abs");recomputeDefend();});
-["dhm","dhs","dah","dam","das","dmm","dms"].forEach(function(id){$(id).addEventListener("input",recomputeDefend);});
-function copy(txt,btn,orig){var done=function(){btn.textContent="已复制 ✓";setTimeout(function(){btn.textContent=orig;},1500);};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(done,done);
-  else{var ta=document.createElement("textarea");ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);done();}}
-
-// tabs
+$("startBtn").addEventListener("click",function(){if(callerT0){callerT0=null;this.textContent="▶ 开始发车";this.classList.add("amber");}
+  else{callerT0=Date.now();this.textContent="发车中…";this.classList.remove("amber");}recompute();});
+$("resetBtn").addEventListener("click",function(){callerT0=null;$("startBtn").textContent="▶ 开始发车";$("startBtn").classList.add("amber");recompute();});
+$("copyLink").addEventListener("click",function(){cp(location.href,this,"📋 复制链接");});
+$("copyOrder").addEventListener("click",function(){cp($("orderText").value,this,"复制发车令");});
+$("modeSeg").addEventListener("click",function(e){var b=e.target.closest("[data-v]");if(!b)return;st.mode=b.dataset.v;seg("modeSeg","v",st.mode);
+  $("modeHint").textContent=st.mode==="conquest"?"全力夺取：把占领时间集中喂给一个守城联盟，连占 3 小时直接赢（或 6 小时累计最久）。":"轮换分享：各联盟 R5 约定 NAP，故意在 3 小时前放城让计时重置，按时段轮换王城/炮塔，让更多人拿个人奖励。";saveHash();});
+["dhm","dhs","dmm","dms"].forEach(function(id){$(id).addEventListener("input",recomputeDefend);});
+function cp(t,b,o){var d=function(){b.textContent="已复制 ✓";setTimeout(function(){b.textContent=o;},1500);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(d,d);
+  else{var ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");}catch(e){}document.body.removeChild(ta);d();}}
 var secMap={sync:"sync",turret:"turret",defend:"defend",play:"play_s"};
 document.querySelector(".tabs").addEventListener("click",function(e){var b=e.target.closest("[data-tab]");if(!b)return;
   this.querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b);});
@@ -498,11 +387,10 @@ document.querySelector(".tabs").addEventListener("click",function(e){var b=e.tar
 
 /* ---------- init ---------- */
 buildStage();
-if(!loadHash()){ st.rallies=[newRally("大鲸 A","",  "cap",4,0,""), newRally("鲸 B","","drain",2,30,""), newRally("鲸 C","","gar",3,0,"")]; }
-$("pm").value=Math.floor(st.prep/60);$("ps").value=pad(st.prep%60);
-renderRallies(); renderStructs(); recompute(); recomputeDefend();
+if(!loadHash()){st.rallies=[newR("大鲸 A","cap",4,0,""),newR("鲸 B","drain",2,30,""),newR("鲸 C","gar",3,0,"")];}
+renderRallies();renderStructs();recompute();recomputeDefend();
 $("modeHint").textContent="全力夺取：把占领时间集中喂给一个守城联盟，连占 3 小时直接赢（或 6 小时累计最久）。";
-tick(); setInterval(tick,300);
+tick();setInterval(tick,300);
 })();
 </script>
 </body>

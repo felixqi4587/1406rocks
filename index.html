@@ -321,7 +321,18 @@
   <section id="auto" class="hide">
     <div class="card hero">
       <div class="herohead"><span class="step">🎁</span>云端全自动兑换</div>
-      <div class="herosub">录入队员 Player ID 即可。云端（Cloudflare）<b>自动收码 + 给全队兑换</b>，队员零操作，<b>约每 5 分钟自动检查、发现新码就自动兑换</b>（连点都不用）；也可下方手动立即兑换。官方客服已确认此类自动兑换不打击。</div>
+      <div class="herosub">录入队员 Player ID 即可。云端（Cloudflare）<b>自动收码 + 给全队兑换</b>，队员零操作。<b>官方 Discord 直连每 1 分钟读一次</b>、第三方源每 5 分钟兜底，发现新码立刻全队兑换（连点都不用）。官方客服已确认此类自动兑换不打击。</div>
+    </div>
+    <div class="card">
+      <h2>🤖 官方 Discord 直连（秒级·全自动）</h2>
+      <p class="hint">把 <b>1406rocks-codebot</b> 的 Bot Token 粘进来，云端就每分钟直读你关注的官方发码频道、发现新码立刻全队兑换。<b>这是不依赖任何第三方、信得过的官方直连。</b>Token 只存在你自己的云端、仅管理可见。</p>
+      <div id="discordStatus" class="hint" style="margin:8px 0">检查连接中…</div>
+      <div style="display:flex;gap:8px">
+        <input id="dToken" type="password" placeholder="粘贴 Bot Token（机器人页「重置令牌」后复制）" autocomplete="off" spellcheck="false"
+          style="flex:1;min-width:0;padding:11px 12px;border:1px solid var(--gold-line);border-radius:10px;background:var(--surface);color:var(--t1);font-size:13px">
+        <button class="btn amber" id="dTokenBtn" style="white-space:nowrap;width:auto;padding:0 16px">连接</button>
+      </div>
+      <div id="dTokenMsg" class="hint" style="margin-top:8px"></div>
     </div>
     <div class="card">
       <h2>👥 队员名单</h2>
@@ -486,7 +497,7 @@ function showView(v){ if((v==="admin"||v==="auto")&&!admin) v="home"; view=v;
   $("auto").classList.toggle("hide",v!=="auto");
   $("viewtabs").querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-v")===v);});
   window.scrollTo(0,0);
-  if(v==="auto"){ if(!rosterLoaded) loadRoster(); loadAutoCodes(); loadLast(); }
+  if(v==="auto"){ if(!rosterLoaded) loadRoster(); loadAutoCodes(); loadLast(); loadDiscordStatus(); }
 }
 function applyAdminUI(){
   $("pubBtn").classList.toggle("hide",!admin);
@@ -605,6 +616,21 @@ function ingestCode(){ var inp=$("ingestCode"), msg=$("ingestMsg"), b=$("ingestB
        inp.value=""; msg.innerHTML='✓ 已推送 <b style="color:var(--ac2)">'+c.map(esc).join("、")+'</b>，云端正在给全队抢兑。几秒后下方「立即云端兑换全队」可看到明细。';
        toast("已推送官方码，云端抢兑中 ⚡"); setTimeout(loadAutoCodes,4000); setTimeout(loadLast,8000); }
      else msg.innerHTML='<span style="color:var(--bad)">推送失败。</span>'; })
+   .catch(function(){ b.disabled=false;b.textContent=old; msg.innerHTML='<span style="color:var(--bad)">网络错误/超时。</span>'; }); }
+function renderDiscordStatus(j){ var s=$("discordStatus"); if(!s) return;
+  if(!j||!j.ok){ s.innerHTML='<span style="color:var(--t3)">状态未知。</span>'; return; }
+  if(!j.connected){ s.innerHTML=j.error?('<span style="color:var(--bad)">未连接：'+esc(j.error)+'</span>'):'<span style="color:var(--t3)">尚未连接官方 Discord（粘贴 Bot Token 即可开启）。</span>'; return; }
+  var chans=(j.channels||[]).map(function(c){return esc(c.name);}).join("、")||"（无可读频道）";
+  s.innerHTML='<span style="color:var(--ok);font-weight:700">● 已连接</span> · 每 1 分钟直读：<b style="color:var(--ac2)">'+chans+'</b>'; }
+function loadDiscordStatus(){ var s=$("discordStatus"); if(!s) return; fetch(WBASE+"/discordstatus",{cache:"no-store"}).then(function(r){return r.json();}).then(renderDiscordStatus).catch(function(){ s.innerHTML='<span style="color:var(--t3)">状态加载失败。</span>'; }); }
+function saveDiscordToken(){ var inp=$("dToken"), msg=$("dTokenMsg"), b=$("dTokenBtn"); var tok=(inp.value||"").trim();
+  if(!tok){ msg.innerHTML='<span style="color:var(--ac2)">先粘贴 Bot Token。</span>'; return; }
+  var old=b.textContent; b.disabled=true; b.textContent="连接中…"; msg.innerHTML='正在验证 token 并读取可见频道…';
+  fetch(WBASE+"/discordtoken",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:"666",token:tok})})
+   .then(function(r){return r.json();}).then(function(j){ b.disabled=false;b.textContent=old;
+     if(j&&j.ok&&!j.error){ inp.value=""; var chans=(j.channels||[]).map(function(c){return esc(c.name);}).join("、")||"（无可读频道，确认 bot 已在你服务器、能看到那个频道）";
+       msg.innerHTML='✓ 已连接！每分钟直读：<b style="color:var(--ac2)">'+chans+'</b>'; toast("官方 Discord 已连接 ✓"); loadDiscordStatus(); }
+     else msg.innerHTML='<span style="color:var(--bad)">连接失败：'+esc((j&&j.error)||"token 无效")+'</span>'; })
    .catch(function(){ b.disabled=false;b.textContent=old; msg.innerHTML='<span style="color:var(--bad)">网络错误/超时。</span>'; }); }
 
 /* ---------- render: admin ---------- */
@@ -762,6 +788,8 @@ $("addMember").addEventListener("click",function(){roster.push({name:"",fid:""})
 $("runRedeem").addEventListener("click",runRedeem);
 $("ingestBtn").addEventListener("click",ingestCode);
 $("ingestCode").addEventListener("keydown",function(e){ if(e.key==="Enter") ingestCode(); });
+$("dTokenBtn").addEventListener("click",saveDiscordToken);
+$("dToken").addEventListener("keydown",function(e){ if(e.key==="Enter") saveDiscordToken(); });
 ["me_mm","me_ss"].forEach(function(id){$(id).addEventListener("input",function(){renderRefillPanel();});});
 $("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶";tNow=+$("scrub").value;renderAnim(tNow);});
 $("pp").addEventListener("click",function(){playing=!playing;$("pp").textContent=playing?"⏸":"▶";lastTs=null;});

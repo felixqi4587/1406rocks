@@ -554,7 +554,7 @@ function loadAutoCodes(){ var box=$("autoCodes"); if(!box) return; box.textConte
   fetch(WBASE+"/codes",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){ var cs=(j&&j.codes)||[];
     box.innerHTML= cs.length? '<div class="chips">'+cs.map(function(c){return '<span class="chip" style="background:var(--acb);border-color:var(--gold-line);color:var(--ac2)">'+esc(c)+'</span>';}).join("")+'</div>' : '<span class="hint">暂无可用码</span>'; })
    .catch(function(){ box.textContent="加载失败"; }); }
-function statusInfo(s){ var m={ok:["✓ 刚兑换","var(--ok)"],already:["✓ 已兑换","var(--ok)"],expired:["码过期","var(--ac2)"],invalid:["码无效","var(--bad)"],usedup:["已用尽","var(--ac2)"],bad_fid:["FID错误","var(--bad)"],rate:["限流稍后","var(--ac2)"],capped:["超上限,下次","var(--t3)"],err:["失败","var(--bad)"]}; return m[s]||[s,"var(--t2)"]; }
+function statusInfo(s){ var m={ok:["✓ 刚兑换","var(--ok)"],already:["✓ 已兑换","var(--ok)"],expired:["码过期","var(--ac2)"],invalid:["码无效","var(--bad)"],usedup:["已用尽","var(--ac2)"],limited:["⚠ 限量抢光","var(--ac2)"],bad_fid:["FID错误","var(--bad)"],rate:["限流稍后","var(--ac2)"],capped:["超上限,下次","var(--t3)"],err:["失败","var(--bad)"]}; return m[s]||[s,"var(--t2)"]; }
 function renderLog(rec){ var log=$("redeemLog"); if(!log) return;
   var when=rec&&rec.ranAt?("（"+clk(Date.parse(rec.ranAt))+" UTC）"):"";
   if(!rec||!rec.results||!rec.results.length){

@@ -554,15 +554,31 @@ function loadAutoCodes(){ var box=$("autoCodes"); if(!box) return; box.textConte
   fetch(WBASE+"/codes",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){ var cs=(j&&j.codes)||[];
     box.innerHTML= cs.length? '<div class="chips">'+cs.map(function(c){return '<span class="chip" style="background:var(--acb);border-color:var(--gold-line);color:var(--ac2)">'+esc(c)+'</span>';}).join("")+'</div>' : '<span class="hint">暂无可用码</span>'; })
    .catch(function(){ box.textContent="加载失败"; }); }
-function statusInfo(s){ var m={ok:["✓ 成功","var(--ok)"],already:["已领过","var(--t3)"],expired:["码过期","var(--ac2)"],invalid:["码无效","var(--bad)"],usedup:["已用尽","var(--ac2)"],bad_fid:["FID错误","var(--bad)"],rate:["限流稍后","var(--ac2)"],capped:["超上限","var(--t3)"],err:["失败","var(--bad)"]}; return m[s]||[s,"var(--t2)"]; }
+function statusInfo(s){ var m={ok:["✓ 刚兑换","var(--ok)"],already:["✓ 已兑换","var(--ok)"],expired:["码过期","var(--ac2)"],invalid:["码无效","var(--bad)"],usedup:["已用尽","var(--ac2)"],bad_fid:["FID错误","var(--bad)"],rate:["限流稍后","var(--ac2)"],capped:["超上限,下次","var(--t3)"],err:["失败","var(--bad)"]}; return m[s]||[s,"var(--t2)"]; }
 function renderLog(rec){ var log=$("redeemLog"); if(!log) return;
   var when=rec&&rec.ranAt?("（"+clk(Date.parse(rec.ranAt))+" UTC）"):"";
   if(!rec||!rec.results||!rec.results.length){
-    if(rec&&rec.skipped) log.innerHTML='<p class="hint">✓ 全部已兑换过，无需重复'+when+'（已跳过 '+rec.skipped+' 个已兑换的码）。</p>';
-    else log.innerHTML='<p class="hint">暂无结果（名单为空就先加队员）。</p>';
+    if(rec&&rec.count===0) log.innerHTML='<p class="hint">名单为空——请先在上方添加队员（输入即自动保存到云端）。</p>';
+    else if(rec&&rec.codes&&!rec.codes.length) log.innerHTML='<p class="hint">暂无可兑换的礼包码（系统每 30 分钟自动收码，有新码会自动兑换）。</p>';
+    else log.innerHTML='<p class="hint">暂无结果。</p>';
     return; }
-  log.innerHTML='<div class="lab" style="margin-top:0">兑换结果 · '+(rec.mode==="auto"?"自动":"手动")+' '+when+(rec.newSuccess?' · 新成功 '+rec.newSuccess:'')+(rec.skipped?' · 跳过已兑 '+rec.skipped:'')+'</div>'+rec.results.map(function(r){var si=statusInfo(r.status);
-    return '<div style="display:flex;gap:8px;align-items:center;font-size:12.5px;padding:6px 0;border-bottom:1px solid var(--line)"><span style="flex:1;min-width:0">'+esc(r.name)+' · <b style="color:var(--ac2)">'+esc(r.code)+'</b></span><span style="color:'+si[1]+';font-weight:700;white-space:nowrap">'+si[0]+'</span></div>'; }).join(""); }
+  // group results by player (fid), preserve roster order of first appearance
+  var groups=[], idx={};
+  rec.results.forEach(function(r){ var k=r.fid; if(idx[k]==null){ idx[k]=groups.length; groups.push({fid:r.fid,name:r.name,rows:[]}); } groups[idx[k]].rows.push(r); });
+  var head='<div class="lab" style="margin-top:0">兑换明细 · '+(rec.mode==="auto"?"自动":"手动")+' '+when
+    +(rec.newSuccess?' · <span style="color:var(--ok)">本次新兑 '+rec.newSuccess+'</span>':'')+'</div>';
+  var body=groups.map(function(g){
+    var rows=g.rows.map(function(r){var si=statusInfo(r.status);
+      return '<div style="display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0 5px 10px;border-bottom:1px solid var(--line)">'
+        +'<b style="flex:1;min-width:0;color:var(--ac2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.code)+'</b>'
+        +'<span style="color:'+si[1]+';font-weight:700;white-space:nowrap">'+si[0]+'</span></div>'; }).join("");
+    var n=g.rows.filter(function(r){return r.status==="ok"||r.status==="already";}).length;
+    return '<div style="margin-top:10px">'
+      +'<div style="display:flex;gap:8px;align-items:baseline;font-weight:800;font-size:13.5px;padding:4px 0">'
+      +'<span>'+esc(g.name)+'</span><span class="hint" style="font-weight:500">ID '+esc(g.fid)+'</span>'
+      +'<span style="margin-left:auto;color:var(--ok);font-weight:700;font-size:12px">'+n+'/'+g.rows.length+' 已得</span></div>'
+      +rows+'</div>'; }).join("");
+  log.innerHTML=head+body; }
 function loadLast(){ fetch(WBASE+"/lastredeem",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){ if(j&&j.results&&j.results.length) renderLog(j); }).catch(function(){}); }
 function runRedeem(){ var b=$("runRedeem"), old=b.textContent; b.disabled=true; b.textContent="云端兑换中…（约几十秒）";
   $("redeemLog").innerHTML='<p class="hint">正在云端给全队兑换，请稍候…</p>';

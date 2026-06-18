@@ -321,7 +321,7 @@
   <section id="auto" class="hide">
     <div class="card hero">
       <div class="herohead"><span class="step">🎁</span>云端全自动兑换</div>
-      <div class="herosub">录入队员 Player ID 即可。云端（Cloudflare）<b>自动收码 + 给全队兑换</b>，队员零操作，<b>约每 30 分钟自动检查、发现新码就自动兑换</b>（连点都不用）；也可下方手动立即兑换。官方客服已确认此类自动兑换不打击。</div>
+      <div class="herosub">录入队员 Player ID 即可。云端（Cloudflare）<b>自动收码 + 给全队兑换</b>，队员零操作，<b>约每 5 分钟自动检查、发现新码就自动兑换</b>（连点都不用）；也可下方手动立即兑换。官方客服已确认此类自动兑换不打击。</div>
     </div>
     <div class="card">
       <h2>👥 队员名单</h2>
@@ -335,7 +335,17 @@
       <div id="autoCodes" class="hint">加载中…</div>
     </div>
     <div class="card">
-      <p class="hint" style="margin:0 0 9px">加完 Player ID 点这里立即领取（否则约每 30 分钟云端自动检查、有新码自动兑换）。</p>
+      <h2>📥 直接喂官方码（秒级抢）</h2>
+      <p class="hint" style="margin:0 0 9px">在官方 Discord 看到新码？把<b>码</b>（或整段消息）粘进来，云端<b>立刻</b>给全队抢兑——不等 5 分钟巡检。这是你信得过的官方直连通道。</p>
+      <div style="display:flex;gap:8px">
+        <input id="ingestCode" type="text" placeholder="粘贴官方码 或 整段消息" autocomplete="off" spellcheck="false"
+          style="flex:1;min-width:0;padding:11px 12px;border:1px solid var(--gold-line);border-radius:10px;background:var(--surface);color:var(--t1);font-size:14px">
+        <button class="btn amber" id="ingestBtn" style="white-space:nowrap;width:auto;padding:0 16px">⚡ 立即抢</button>
+      </div>
+      <div id="ingestMsg" class="hint" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <p class="hint" style="margin:0 0 9px">加完 Player ID 点这里立即领取（否则约每 5 分钟云端自动检查、有新码自动兑换）。</p>
       <button class="btn amber full" id="runRedeem">▶ 立即云端兑换全队</button>
       <div id="redeemLog" style="margin-top:10px"></div>
     </div>
@@ -585,6 +595,17 @@ function runRedeem(){ var b=$("runRedeem"), old=b.textContent; b.disabled=true; 
   fetch(WBASE+"/redeem",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:"666"})})
    .then(function(r){return r.json();}).then(function(j){ b.disabled=false;b.textContent=old; if(j&&j.ok){ renderLog(j.result); toast("云端兑换完成 ✓"); } else toast("兑换失败"); })
    .catch(function(){ b.disabled=false;b.textContent=old; toast("网络错误/超时"); }); }
+function ingestCode(){ var inp=$("ingestCode"), msg=$("ingestMsg"), b=$("ingestBtn"); var text=(inp.value||"").trim();
+  if(!text){ msg.innerHTML='<span style="color:var(--ac2)">先粘贴官方码或消息。</span>'; return; }
+  var old=b.textContent; b.disabled=true; b.textContent="抢兑中…"; msg.innerHTML='正在把码推到云端、立即给全队抢兑…';
+  fetch(WBASE+"/ingest",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:"666",text:text})})
+   .then(function(r){return r.json();}).then(function(j){ b.disabled=false;b.textContent=old;
+     if(j&&j.ok){ var c=(j.candidates||[]);
+       if(!c.length){ msg.innerHTML='<span style="color:var(--ac2)">没识别出码——直接把码本身粘进来再试。</span>'; return; }
+       inp.value=""; msg.innerHTML='✓ 已推送 <b style="color:var(--ac2)">'+c.map(esc).join("、")+'</b>，云端正在给全队抢兑。几秒后下方「立即云端兑换全队」可看到明细。';
+       toast("已推送官方码，云端抢兑中 ⚡"); setTimeout(loadAutoCodes,4000); setTimeout(loadLast,8000); }
+     else msg.innerHTML='<span style="color:var(--bad)">推送失败。</span>'; })
+   .catch(function(){ b.disabled=false;b.textContent=old; msg.innerHTML='<span style="color:var(--bad)">网络错误/超时。</span>'; }); }
 
 /* ---------- render: admin ---------- */
 function seg(id,val){var s=$(id);if(s)s.querySelectorAll("button").forEach(function(b){b.classList.toggle("on",b.getAttribute("data-v")===String(val));});}
@@ -739,6 +760,8 @@ $("addWhale").addEventListener("click",function(){st.castleWhales.push(newWhale(
 $("addEnemy").addEventListener("click",function(){st.enemyWhales.push(newEnemy("",1,0));renderEnemies();rebuildStage();renderHome();});
 $("addMember").addEventListener("click",function(){roster.push({name:"",fid:""});renderRoster();});
 $("runRedeem").addEventListener("click",runRedeem);
+$("ingestBtn").addEventListener("click",ingestCode);
+$("ingestCode").addEventListener("keydown",function(e){ if(e.key==="Enter") ingestCode(); });
 ["me_mm","me_ss"].forEach(function(id){$(id).addEventListener("input",function(){renderRefillPanel();});});
 $("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶";tNow=+$("scrub").value;renderAnim(tNow);});
 $("pp").addEventListener("click",function(){playing=!playing;$("pp").textContent=playing?"⏸":"▶";lastTs=null;});

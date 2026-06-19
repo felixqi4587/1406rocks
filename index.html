@@ -71,13 +71,10 @@
     border:1px solid var(--line);border-radius:10px;padding:7px 10px;margin:0 0 14px;text-align:center;letter-spacing:.2px}
   .castlephase b{color:var(--ac2);font-weight:700}
 
-  /* ---- gift-code page: back link ---- */
-  .backhome{display:inline-flex;align-items:center;gap:5px;background:none;border:none;color:var(--t2);
-    font:600 13px/1 var(--font);cursor:pointer;padding:4px 0;margin-bottom:4px}
-  #brand{-webkit-user-select:none;user-select:none}
-
   /* ---- view tabs ---- */
-  .viewtabs{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-bottom:14px}
+  .viewtabs{display:flex;gap:6px;margin-bottom:14px}
+  .viewtabs button{flex:1}
+  .viewtabs button.adminonly{display:none}
   .viewtabs button{border:1px solid var(--line);background:linear-gradient(180deg,var(--surface-hi),var(--surface));
     color:var(--t2);border-radius:12px;padding:11px 2px;cursor:pointer;font:700 12.5px/1.1 var(--font);transition:.18s}
   .viewtabs button.on{border-color:var(--ac);background:linear-gradient(180deg,rgba(236,174,54,.22),rgba(236,174,54,.08));
@@ -275,9 +272,10 @@
       <button class="lockbtn" id="lockBtn">🔒 管理</button>
     </span>
   </div>
-  <div class="viewtabs hide" id="viewtabs">
-    <button data-v="admin" class="on">🔧 配置</button>
-    <button data-v="home">👁 预览</button>
+  <div class="viewtabs" id="viewtabs">
+    <button data-v="home" class="on">⚔️ 王城战</button>
+    <button data-v="auto">🎁 礼包码</button>
+    <button data-v="admin" class="adminonly">🔧 配置</button>
   </div>
 
   <!-- ===================== 玩家主页 ===================== -->
@@ -324,7 +322,6 @@
 
   <!-- ===================== 云端自动兑换（仅管理） ===================== -->
   <section id="auto" class="hide">
-    <button class="backhome" id="autoBack">← 返回主页</button>
     <div class="card hero">
       <div class="herohead"><span class="step">🎁</span>全自动兑换</div>
       <div class="herosub">队员零操作。官方 Discord 直连每分钟读 + 三方源每 5 分钟兜底，发现新码<b>全队自动秒兑</b>。</div>
@@ -424,7 +421,7 @@ var C={ac:"#E9A82E",ac2:"#FFC558",ok:"#36D17A",bad:"#FF5247",blue:"#5BA8FF",t3:"
 
 var st={ side:"right", tactics:"", castleWhales:[], turretLeaders:["","","",""], enemyWhales:[], giftCodes:[] };
 var admin=false, adminName="", baseUpdatedAt=null, uid=1, view="home", roster=[];
-var codeUnlocked=false, brandTaps=0, brandTapT=0; // secret entry to the hidden gift-code page
+var codeUnlocked=false; // 礼包码 tab requires 666 to enter (per session)
 var LS_KEY="rocks1406_admin", LS_FID="rocks1406_fid", LS_REDEEMED="rocks1406_redeemed", LS_ROSTER="rocks1406_roster";
 var GIFT_URL="https://ks-giftcode.centurygame.com/";
 
@@ -501,14 +498,10 @@ function doLogin(){ var pw=prompt("管理密码："); if(pw==null) return; if(pw
   try{ localStorage.setItem(LS_KEY,JSON.stringify({ok:true,name:nm})); }catch(e){}
   view="admin"; applyAdminUI(); toast("已进入管理 · "+(nm||"匿名")); }
 function doLogout(){ admin=false; adminName=""; try{localStorage.removeItem(LS_KEY);}catch(e){} view="home"; applyAdminUI(); toast("已退出管理"); }
-// secret entry to the hidden gift-code page: tap the 1406 ROCKS logo 5× → enter 666 (no visible hint)
-function brandTap(){ var t=Date.now(); if(t-brandTapT>2500) brandTaps=0; brandTapT=t; brandTaps++;
-  if(brandTaps>=5){ brandTaps=0; enterCodes(); } }
-function enterCodes(){ if(codeUnlocked||admin){ showView("auto"); return; }
-  var pw=prompt("密码："); if(pw==null) return; if(pw!=="666"){ toast("密码错误"); return; }
-  codeUnlocked=true; showView("auto"); }
+// tab navigation; the 礼包码 (auto) tab requires password 666 to enter/modify
+function gotoTab(v){ if(v==="auto" && !codeUnlocked && !admin){ var pw=prompt("密码（礼包码兑换）："); if(pw==null) return; if(pw!=="666"){ toast("密码错误"); return; } codeUnlocked=true; } showView(v); }
 function showView(v){ if(v==="admin"&&!admin) v="home";
-  if(v==="auto"&&!codeUnlocked&&!admin) v="home"; // gift-code page is gated by the secret 666 entry
+  if(v==="auto"&&!codeUnlocked&&!admin) v="home"; // 礼包码 tab gated by 666
   view=v;
   $("home").classList.toggle("hide",v!=="home");
   $("admin").classList.toggle("hide",v!=="admin");
@@ -521,7 +514,7 @@ function applyAdminUI(){
   $("pubBtn").classList.toggle("hide",!admin);
   $("logoutBtn").classList.toggle("hide",!admin);
   $("lockBtn").classList.toggle("hide",admin);
-  $("viewtabs").classList.toggle("hide",!admin);
+  var cfg=$("viewtabs").querySelector('[data-v="admin"]'); if(cfg) cfg.style.display=admin?"block":"none"; // 配置 tab only for admin
   if(!admin && view==="admin") view="home";
   showView(view);
   rebuild();
@@ -800,7 +793,7 @@ $("lockBtn").addEventListener("click",doLogin);
 $("logoutBtn").addEventListener("click",doLogout);
 $("pubBtn").addEventListener("click",publishPlan);
 $("pubBtn2").addEventListener("click",publishPlan);
-$("viewtabs").addEventListener("click",function(e){var b=e.target.closest("[data-v]");if(!b)return;view=b.getAttribute("data-v");applyAdminUI();});
+$("viewtabs").addEventListener("click",function(e){var b=e.target.closest("[data-v]");if(!b)return;gotoTab(b.getAttribute("data-v"));});
 $("sideSeg").addEventListener("click",function(e){var b=e.target.closest("[data-v]");if(!b||!admin)return;st.side=b.getAttribute("data-v");seg("sideSeg",st.side);rebuildStage();renderHome();});
 $("tacticsEdit").addEventListener("input",function(){st.tactics=this.value;renderTactics();});
 $("addWhale").addEventListener("click",function(){st.castleWhales.push(newWhale("",1,0,[],""));renderWhales();renderStagger();rebuildStage();renderHome();});
@@ -811,8 +804,6 @@ $("ingestBtn").addEventListener("click",ingestCode);
 $("ingestCode").addEventListener("keydown",function(e){ if(e.key==="Enter") ingestCode(); });
 $("dTokenBtn").addEventListener("click",saveDiscordToken);
 $("dToken").addEventListener("keydown",function(e){ if(e.key==="Enter") saveDiscordToken(); });
-$("brand").addEventListener("click",brandTap);
-$("autoBack").addEventListener("click",function(){ showView("home"); });
 ["me_mm","me_ss"].forEach(function(id){$(id).addEventListener("input",function(){renderRefillPanel();});});
 $("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶";tNow=+$("scrub").value;renderAnim(tNow);});
 $("pp").addEventListener("click",function(){playing=!playing;$("pp").textContent=playing?"⏸":"▶";lastTs=null;});

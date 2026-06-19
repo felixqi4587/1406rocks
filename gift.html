@@ -48,7 +48,7 @@
     </div>
     <div class="card">
       <h2>👥 队员名单</h2>
-      <p class="hint">名字（备注）+ Player ID（游戏内点左上角头像可看到）。<b>改动自动保存。</b></p>
+      <p class="hint"><b>只填 Player ID</b>（游戏内点左上角头像可看到），名字会自动获取并显示在右边。改动自动保存。</p>
       <div id="rosterList"></div>
       <button class="add" id="addMember">＋ 加队员</button>
       <div id="rosterSave" class="hint" style="margin-top:9px">改动会自动保存到云端</div>
@@ -89,14 +89,24 @@ var LS_ROSTER="rocks1406_roster";
 var roster=[], rosterSaveT=null, rosterLoaded=false, rosterDirty=false;
 
 /* ---------- roster ---------- */
+var lookupT={};
+function lookupName(m,view){ var fid=m.fid; if(!fid||fid.length<4){ view.innerHTML='<span style="color:var(--brown3)">填 Player ID</span>'; return; }
+  clearTimeout(lookupT[fid]); lookupT[fid]=setTimeout(function(){
+    authedFetch("/lookup",{fid:fid}).then(function(r){return r.json();}).then(function(j){ if(m.fid!==fid) return;
+      if(j&&j.ok&&j.nickname){ m.name=j.nickname; view.innerHTML='<b style="color:var(--mint-deep)">'+esc(j.nickname)+'</b>'; scheduleSave(); }
+      else { view.innerHTML='<span style="color:var(--coral)">查无此 ID</span>'; } })
+    .catch(function(){ view.innerHTML='<span style="color:var(--brown3)">获取失败</span>'; }); }, 600); }
 function renderRoster(){ var box=$("rosterList"); if(!box) return; box.innerHTML="";
-  if(!roster.length){ box.innerHTML='<p class="hint">还没有队员，点下方「＋ 加队员」。</p>'; }
+  if(!roster.length){ box.innerHTML='<p class="hint">还没有队员，点下方「＋ 加队员」，<b>只填 Player ID</b>，名字会自动获取。</p>'; }
   roster.forEach(function(m,idx){ var el=document.createElement("div"); el.className="whale";
-    el.innerHTML='<div class="r1"><input class="nm" placeholder="名字/备注" value="'+esc(m.name||"")+'" data-k="name">'+
-      '<input class="nm" inputmode="numeric" placeholder="Player ID" value="'+esc(m.fid||"")+'" data-k="fid" style="flex:0 0 132px;font-family:var(--mono)">'+
+    el.innerHTML='<div class="r1">'+
+      '<input class="nm" inputmode="numeric" placeholder="Player ID" value="'+esc(m.fid||"")+'" data-k="fid" style="flex:0 0 138px;font-family:var(--mono)">'+
+      '<div class="nmview" style="flex:1;min-width:0;padding:10px;font-weight:800;color:var(--mint-deep);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(m.name?('<b style="color:var(--mint-deep)">'+esc(m.name)+'</b>'):'<span style="color:var(--brown3)">名字自动获取…</span>')+'</div>'+
       '<button class="del">×</button></div>';
-    el.addEventListener("input",function(e){var k=e.target.getAttribute("data-k");if(!k)return; m[k]= (k==="fid"? e.target.value.replace(/\D/g,"") : e.target.value); scheduleSave();});
+    var inp=el.querySelector('[data-k="fid"]'), view=el.querySelector('.nmview');
+    inp.addEventListener("input",function(){ m.fid=inp.value.replace(/\D/g,""); m.name=""; view.innerHTML='<span style="color:var(--brown3)">查询中…</span>'; scheduleSave(); lookupName(m,view); });
     el.querySelector(".del").addEventListener("click",function(){roster.splice(idx,1);renderRoster();scheduleSave();});
+    if(m.fid && !m.name) lookupName(m,view);
     box.appendChild(el); }); }
 function lsRoster(){ try{return JSON.parse(localStorage.getItem(LS_ROSTER)||"[]");}catch(e){return [];} }
 function loadRoster(){

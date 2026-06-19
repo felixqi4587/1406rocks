@@ -74,6 +74,13 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opa
 .viewtabs .on{border-color:var(--mint);background:linear-gradient(180deg,#eafaf7,var(--mint-bg));color:var(--mint-deep);
   box-shadow:0 6px 16px -8px rgba(25,200,185,.6)}
 
+/* ---- language toggle (中/EN) ---- */
+.langtoggle{display:inline-flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;background:var(--paper);flex:0 0 auto}
+.langtoggle .langbtn{border:0;background:none;cursor:pointer;font:800 12px/1 var(--font);color:var(--brown3);padding:7px 11px;transition:.14s}
+.langtoggle .langbtn.on{background:linear-gradient(180deg,#eafaf7,var(--mint-bg));color:var(--mint-deep)}
+.langtoggle .langbtn:active{transform:translateY(1px)}
+.homebar{display:flex;justify-content:flex-end;margin-bottom:6px}
+
 /* ---- cards ---- */
 .card{position:relative;background:var(--paper);border:2px solid var(--line);border-radius:var(--r-lg);
   padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}

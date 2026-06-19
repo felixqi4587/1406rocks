@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f8f8f0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>咸鱼小队 · saltyfish</title>
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="app.css?v=8">
 <style>
   /* home-only flourishes */
   .fishfloat{animation:bob 3.6s ease-in-out infinite}
@@ -28,6 +28,7 @@
 <body>
 <div class="wrap">
   <main>
+  <div class="homebar"><div id="langtoggle" class="langtoggle"></div></div>
   <div class="card hero" style="text-align:center">
     <div class="herofish">
       <svg class="fishfloat" viewBox="0 0 320 230" width="232" style="max-width:78%;overflow:visible">
@@ -77,34 +78,29 @@
 
   <a class="card entry" href="defense.html">
     <div class="em def">🛡️</div>
-    <div><h2>防守支援</h2><p class="hint" style="margin:0">填你的行军时间 → 看几点发补兵、护住王城</p></div>
+    <div><h2 data-i18n="home_def_title">防守支援</h2><p class="hint" style="margin:0" data-i18n="home_def_desc">填你的行军时间 → 看几点发补兵、护住王城</p></div>
     <div class="go">›</div>
   </a>
 
   <a class="card entry" href="gift.html">
     <div class="em gift">🎁</div>
-    <div><h2>礼包码</h2><p class="hint" style="margin:0">全队自动兑换 · 官方 Discord 直连（需密码）</p></div>
+    <div><h2 data-i18n="home_gift_title">礼包码</h2><p class="hint" style="margin:0" data-i18n="home_gift_desc">全队自动兑换 · 官方 Discord 直连（需密码）</p></div>
     <div class="go">›</div>
   </a>
 
-  <p class="foot">咸鱼小队自用工具 · 非官方、与 Century Games 无关 · 摸鱼有度，集结有我 🐟</p>
+  <p class="foot" data-i18n="home_foot">咸鱼小队自用工具 · 非官方、与 Century Games 无关 · 摸鱼有度，集结有我 🐟</p>
   </main>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=8"></script>
 <script>
 (function(){
-  var quotes=[
-    "躺平不是摆烂，是战略性休息 🐟",
-    "打不过就一起躺，集结照样支棱 💪",
-    "我们不生产战力，只是盐的搬运工 🧂",
-    "今天也是想被腌入味的一天",
-    "平时咸鱼，战时神兵 ⚔️",
-    "保护集结？那必须支棱起来！"
-  ];
   var i=0, q=document.getElementById("quote");
-  setInterval(function(){ i=(i+1)%quotes.length; q.style.opacity=0;
-    setTimeout(function(){ q.textContent=quotes[i]; q.style.transition="opacity .4s"; q.style.opacity=1; },300); }, 3600);
+  function show(){ q.textContent=t("q"+i); }
+  window.onLangChange=show;
+  initI18n(); show();
+  setInterval(function(){ i=(i+1)%6; q.style.opacity=0;
+    setTimeout(function(){ show(); q.style.transition="opacity .4s"; q.style.opacity=1; },300); }, 3600);
 })();
 </script>
 </body>

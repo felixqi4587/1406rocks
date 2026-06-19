@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f8f8f0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>咸鱼小队 · 防守支援</title>
-<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="app.css?v=8">
 <style>
   /* enemy blocks (clear 敌A/敌B separation) */
   .enemyblock{border:2px solid var(--line);border-radius:20px;padding:8px;margin-bottom:16px;
@@ -43,66 +43,67 @@
 <div class="wrap">
   <div class="top">
     <span class="sig" aria-hidden="true"><svg viewBox="0 0 64 48" width="34" height="26"><path d="M40 24 C40 12 22 10 12 16 C4 21 4 27 12 32 C22 38 40 36 40 24 Z" fill="currentColor"/><path d="M40 24 L58 12 L54 24 L58 36 Z" fill="currentColor"/><circle cx="20" cy="22" r="2.6" fill="#fffdf6"/></svg></span>
-    <div><h1>防守支援</h1><div class="sub">咸鱼小队 · 几点发补兵、护住王城</div></div>
-    <div class="clock"><span id="utc">--:--:--</span><small>UTC · 本地 <span id="loc">--:--:--</span></small></div>
+    <div><h1 data-i18n="def_h1">防守支援</h1><div class="sub" data-i18n="def_sub">咸鱼小队 · 几点发补兵、护住王城</div></div>
+    <div class="clock"><span id="utc">--:--:--</span><small><span data-i18n="utc_local">UTC · 本地</span> <span id="loc">--:--:--</span></small></div>
   </div>
   <div class="viewtabs">
-    <a href="index.html">🐟 首页</a>
-    <a class="on">🛡️ 防守</a>
-    <a href="gift.html">🎁 礼包码</a>
+    <a href="index.html" data-i18n="nav_home">🐟 首页</a>
+    <a class="on" data-i18n="nav_def">🛡️ 防守</a>
+    <a href="gift.html" data-i18n="nav_gift">🎁 礼包码</a>
   </div>
-  <div class="statusbar"><span class="dot" id="netdot"></span><span id="netlab">连接云端中…</span></div>
+  <div class="homebar"><div id="langtoggle" class="langtoggle"></div></div>
+  <div class="statusbar"><span class="dot" id="netdot"></span><span id="netlab" data-i18n="d_net_connecting">连接云端中…</span></div>
 
   <main>
   <div class="card hero">
-    <div class="herohead"><span class="step">①</span>先填这一个：你到王城的行军时间</div>
-    <div class="herosub">游戏里开一次集结、看一眼到王城的行军时间填进来 —— 下方就会告诉你 <b>每条敌鲸该几点发补兵</b>，正好在它落地后约 1 秒补满、把它弹回去。</div>
-    <div class="mmss"><input id="me_mm" type="number" min="0" value="1"><span class="u">分</span><span class="c">:</span><input id="me_ss" type="number" min="0" max="59" value="20"><span class="u">秒</span><span style="margin-left:auto;font-size:11px;color:var(--brown3)">通常 1 分多</span></div>
+    <div class="herohead"><span class="step">①</span><span data-i18n="def_hero_step">先填这一个：你到王城的行军时间</span></div>
+    <div class="herosub" data-i18n-html="def_hero_sub">游戏里开一次集结、看一眼到王城的行军时间填进来 —— 下方就会告诉你 <b>每条敌鲸该几点发补兵</b>，正好在它落地后约 1 秒补满、把它弹回去。</div>
+    <div class="mmss"><input id="me_mm" type="number" min="0" value="1"><span class="u" data-i18n="unit_min">分</span><span class="c">:</span><input id="me_ss" type="number" min="0" max="59" value="20"><span class="u" data-i18n="unit_sec">秒</span><span style="margin-left:auto;font-size:11px;color:var(--brown3)" data-i18n="def_usually">通常 1 分多</span></div>
   </div>
 
   <div class="pond">
     <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
-    <div class="phaselab" id="phaselab">敌方来袭 → 卡间隙补满</div>
-    <div class="leg">🔴 敌鲸来袭<br>🛡️ 你的补兵<br>🏰 王城护盾</div>
+    <div class="phaselab" id="phaselab" data-i18n="d_ph_inc">敌方来袭 → 盯落地</div>
+    <div class="leg" data-i18n-html="def_legend">🔴 敌鲸来袭<br>🛡️ 你的补兵<br>🏰 王城护盾</div>
     <svg viewBox="0 0 360 210" id="svg"></svg>
   </div>
   <div class="ctrl"><button id="pp">⏸</button><input type="range" id="scrub" min="0" max="1000" value="0"></div>
 
   <div class="card">
-    <h2>🛡️ 补兵时机尺（按你的行军算）</h2>
-    <p class="hint">挑当场正在来袭的那条敌鲸，照大字发兵。绿点=你发兵（最关键，会停顿提示）→ 红点=敌落地 → 蓝点=补满。补兵带纯兵、可加速。</p>
+    <h2 data-i18n="def_panel_title">🛡️ 补兵时机尺（按你的行军算）</h2>
+    <p class="hint" data-i18n="def_panel_hint">挑当场正在来袭的那条敌鲸，照大字发兵。绿点=你发兵（最关键，会停顿提示）→ 红点=敌落地 → 蓝点=补满。补兵带纯兵、可加速。</p>
     <div id="refillPanel"></div>
   </div>
 
   <details>
-    <summary>🔧 我自己设敌鲸（仅本机，临时试算）</summary>
-    <p class="hint" style="margin:2px 0 9px">默认用管理发布的敌鲸时间。想自己试算就在这里加/改（只存你本机、不影响别人）。</p>
+    <summary data-i18n="def_local_sum">🔧 我自己设敌鲸（仅本机，临时试算）</summary>
+    <p class="hint" style="margin:2px 0 9px" data-i18n="def_local_hint">默认用管理发布的敌鲸时间。想自己试算就在这里加/改（只存你本机、不影响别人）。</p>
     <div id="localList"></div>
-    <button class="add" id="addLocal">＋ 加一条敌鲸</button>
+    <button class="add" id="addLocal" data-i18n="def_add_local">＋ 加一条敌鲸</button>
     <div class="row" style="margin-top:9px;gap:8px">
-      <button class="btn" id="useLocal" style="flex:1">用我本机的</button>
-      <button class="btn" id="useCloud" style="flex:1">用管理发布的</button>
+      <button class="btn" id="useLocal" style="flex:1" data-i18n="def_use_local">用我本机的</button>
+      <button class="btn" id="useCloud" style="flex:1" data-i18n="def_use_cloud">用管理发布的</button>
     </div>
   </details>
 
   <details id="adminFold">
-    <summary>🎯 管理：设敌方鲸鱼并发布（需密码）</summary>
-    <p class="hint" style="margin:2px 0 9px">设好敌鲸到王城的行军时间并发布，全队防守者打开就能看到、各自填自己行军即可。</p>
-    <div id="adminGate"><button class="btn amber full" id="adminUnlock">🔓 输入密码解锁管理</button></div>
+    <summary data-i18n="def_admin_sum">🎯 管理：设敌方鲸鱼并发布（需密码）</summary>
+    <p class="hint" style="margin:2px 0 9px" data-i18n="def_admin_hint">设好敌鲸到王城的行军时间并发布，全队防守者打开就能看到、各自填自己行军即可。</p>
+    <div id="adminGate"><button class="btn amber full" id="adminUnlock" data-i18n="def_admin_unlock">🔓 输入密码解锁管理</button></div>
     <div id="adminBody" class="hide">
       <div id="enemyList"></div>
-      <button class="add" id="addEnemy">＋ 加敌鲸</button>
-      <button class="btn green full" id="pubBtn" style="margin-top:10px">📣 发布给全队</button>
+      <button class="add" id="addEnemy" data-i18n="def_add_enemy">＋ 加敌鲸</button>
+      <button class="btn green full" id="pubBtn" style="margin-top:10px" data-i18n="def_publish">📣 发布给全队</button>
       <div id="pubMsg" class="hint" style="margin-top:8px"></div>
     </div>
   </details>
 
-  <p class="foot">行军时间随距离与加速变化，请游戏内实测。咸鱼小队自用、非官方、与 Century Games 无关 🐟</p>
+  <p class="foot" data-i18n="def_foot">行军时间随距离与加速变化，请游戏内实测。咸鱼小队自用、非官方、与 Century Games 无关 🐟</p>
   </main>
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="app.js"></script>
+<script src="app.js?v=8"></script>
 <script>
 (function(){
 "use strict";
@@ -111,6 +112,7 @@ var NS="http://www.w3.org/2000/svg";
 var C={mint:"#19c8b9",mintDeep:"#0fa193",green:"#6fba2c",greenDeep:"#5a9e1e",coral:"#e05a5a",brown:"#794f27",brown2:"#9f927d",cream:"#fffdf6",yellow:"#f5c31c"};
 var LS_LOCAL="saltyfish_enemies", LS_NAME="rocks1406_admin";
 var enemies=[], cloudEnemies=[], localEnemies=[], useLocalFlag=false, baseUpdatedAt=null, adminName="";
+var T=window.t, TF=window.tf;   // i18n aliases (local `t` params shadow the global)
 
 function march(o){return (o.mm||0)*60+(o.ss||0);}
 function pad(n){return (n<10?"0":"")+n;}
@@ -129,36 +131,36 @@ function pct(t){ return cl(vmap(t))*100; }
 /* ---- per-enemy timing ---- */
 function calc(e){ var em=march(e), landAt=GATHER+em, refillAt=landAt+DELTA, R=myMarch(), sendAt=Math.max(0,refillAt-R);
   var cue, short, gatherRemain=R-em-DELTA;
-  if(R<=0){ cue="先填你的行军时间"; short="先填行军"; }
-  else if(gatherRemain>0){ cue="他集结剩 "+mmss(gatherRemain)+" 时发兵"; short="集结剩 "+mmss(gatherRemain); }
-  else { var inc=R-DELTA; if(inc<=0){ cue="他发车后立刻发（你很快）"; short="发车后立刻"; } else { cue="来袭落地倒计时 "+mmss(inc)+" 时发兵"; short="落地倒计时 "+mmss(inc); } }
-  return {name:e.name||"敌鲸",em:em,landAt:landAt,refillAt:refillAt,sendAt:sendAt,R:R,cue:cue,short:short,ready:R>0}; }
+  if(R<=0){ cue=T("d_cue_fill"); short=T("d_short_fill"); }
+  else if(gatherRemain>0){ cue=TF("d_cue_gather",{x:mmss(gatherRemain)}); short=TF("d_short_gather",{x:mmss(gatherRemain)}); }
+  else { var inc=R-DELTA; if(inc<=0){ cue=T("d_cue_imm"); short=T("d_short_imm"); } else { cue=TF("d_cue_land",{x:mmss(inc)}); short=TF("d_short_land",{x:mmss(inc)}); } }
+  return {name:e.name||T("d_whale"),em:em,landAt:landAt,refillAt:refillAt,sendAt:sendAt,R:R,cue:cue,short:short,ready:R>0}; }
 
 /* ---- timeline strips ---- */
 function renderStrips(){ var box=$("refillPanel"); box.innerHTML="";
-  if(!enemies.length){ box.innerHTML='<p class="hint">管理员还没发布敌方鲸鱼；战时可口头报点，或在上面「我自己设敌鲸」临时试算。</p>'; return; }
-  enemies.forEach(function(e,i){ var c=calc(e); var nm=esc(e.name||("敌"+String.fromCharCode(65+i)));
+  if(!enemies.length){ box.innerHTML='<p class="hint">'+T("d_empty")+'</p>'; return; }
+  enemies.forEach(function(e,i){ var c=calc(e); var nm=esc(e.name||(T("d_enemy")+String.fromCharCode(65+i)));
     var gx=GVIS*100, sx=pct(c.sendAt), lx=pct(c.landAt), rx=pct(c.refillAt);
     var blk=document.createElement("div"); blk.className="enemyblock";
     var el=document.createElement("div"); el.className="lane"; el.setAttribute("data-i",i);
     el.innerHTML=
-      '<div class="lname">🔴 '+nm+' · 行军 '+mmss(c.em)+'</div>'+
+      '<div class="lname">'+TF("d_lane_title",{n:nm,x:mmss(c.em)})+'</div>'+
       '<div class="track"></div>'+
       '<div class="gband" style="width:'+gx.toFixed(1)+'%"></div>'+
-      '<div class="gbl" style="left:'+(gx/2).toFixed(1)+'%">敌集结 5:00（加速）</div>'+
+      '<div class="gbl" style="left:'+(gx/2).toFixed(1)+'%">'+T("d_gather_band")+'</div>'+
       '<div class="depart" style="left:'+gx.toFixed(1)+'%"><i></i></div>'+
-      '<div class="gaplab" style="left:'+((sx+lx)/2).toFixed(1)+'%">你行军 '+mmss(c.R)+'</div>'+
-      '<div class="fire" style="left:'+sx.toFixed(1)+'%">发兵！</div>'+
+      '<div class="gaplab" style="left:'+((sx+lx)/2).toFixed(1)+'%">'+TF("d_your_march",{x:mmss(c.R)})+'</div>'+
+      '<div class="fire" style="left:'+sx.toFixed(1)+'%">'+T("d_send_now")+'</div>'+
       '<div class="head" style="left:'+sx.toFixed(1)+'%"></div>'+
-      '<div class="mk send" style="left:'+sx.toFixed(1)+'%"><div class="dot"></div><div class="l hi" style="color:var(--green-deep)">你发兵</div><div class="l">'+esc(c.short)+'</div></div>'+
+      '<div class="mk send" style="left:'+sx.toFixed(1)+'%"><div class="dot"></div><div class="l hi" style="color:var(--green-deep)">'+T("d_you_send")+'</div><div class="l">'+esc(c.short)+'</div></div>'+
       '<div class="mk land" style="left:'+lx.toFixed(2)+'%"><div class="dot"></div></div>'+
       '<div class="mk refill" style="left:'+rx.toFixed(2)+'%"><div class="dot"></div></div>'+
-      '<div class="endlab" style="left:'+Math.min(82,(lx+rx)/2).toFixed(2)+'%"><span style="color:var(--coral)">敌落地</span> <span style="color:var(--mint-deep)">补满✓</span></div>';
+      '<div class="endlab" style="left:'+Math.min(82,(lx+rx)/2).toFixed(2)+'%"><span style="color:var(--coral)">'+T("d_enemy_land")+'</span> <span style="color:var(--mint-deep)">'+T("d_refilled")+'</span></div>';
     blk.appendChild(el);
     var cue=document.createElement("div"); cue.className="erow";
-    cue.innerHTML='<div class="et"><b>'+nm+'</b> · 敌集结 5:00 · 你行军 '+mmss(c.R)+'</div>'+
+    cue.innerHTML='<div class="et"><b>'+nm+'</b> · '+TF("d_erow",{x:mmss(c.R)})+'</div>'+
       '<div class="cue">'+(c.ready?esc(c.cue):'<span style="color:var(--brown3)">'+esc(c.cue)+'</span>')+'</div>'+
-      (c.ready?'<div class="note">补兵在它落地后≈'+DELTA+'秒到，正好补满 ✓</div>':'');
+      (c.ready?'<div class="note">'+T("d_note")+'</div>':'');
     blk.appendChild(cue);
     box.appendChild(blk);
   });
@@ -179,7 +181,7 @@ function rebuild(){ buildBase(); anim={};
   anim.fxt=E("text",{x:cx,y:cy,"text-anchor":"middle","font-size":13,"font-weight":900,opacity:0}); svgEl.appendChild(anim.fxt);
   svgEl.appendChild(E("rect",{x:bx-10,y:by-10,width:20,height:20,rx:6,fill:"#dff7f2",stroke:C.mintDeep,"stroke-width":2.5}));
   svgEl.appendChild(E("text",{x:bx,y:by+4,"text-anchor":"middle","font-size":11})).textContent="🛡️";
-  var Ed=enemies.length?enemies:[{name:"敌A",mm:1,ss:10}]; var n=Ed.length, maxRef=0;
+  var Ed=enemies.length?enemies:[{name:T("d_enemy")+"A",mm:1,ss:10}]; var n=Ed.length, maxRef=0;
   anim.enemies=Ed.map(function(e,i){ var c=calc(e); maxRef=Math.max(maxRef,c.refillAt);
     var ang=Math.PI*(0.5-(n===1?0:(i/(n-1)-0.5))*0.9), sx2=cx+Math.cos(ang)*150, sy2=cy-Math.abs(Math.sin(ang))*92-16;
     var o={c:c,sx:sx2,sy:sy2};
@@ -201,9 +203,9 @@ function renderAnim(t, curKey, ts){ if(!anim) return; ts=ts||0;
   anim.castle.setAttribute("stroke", sv<0.7?C.coral:C.brown);
   anim.enemies.forEach(function(o){ var c=o.c, x=o.sx, y=o.sy;
     if(t<GATHER){ o.dot.setAttribute("opacity",.9); var pu=0.5+0.5*Math.sin(t*0.5); o.aura.setAttribute("opacity",.4+.4*pu); o.aura.setAttribute("r",(15+5*pu).toFixed(1)); o.aura.setAttribute("cx",x); o.aura.setAttribute("cy",y);
-      o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-17); o.cd.setAttribute("fill",C.brown2); o.cd.textContent="集结 "+mmss(GATHER-t); }
+      o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-17); o.cd.setAttribute("fill",C.brown2); o.cd.textContent=TF("d_gather_cd",{x:mmss(GATHER-t)}); }
     else if(t<c.landAt){ o.aura.setAttribute("opacity",0); var ap=sg(t,GATHER,c.landAt); x=lerp(o.sx,cx,ap); y=lerp(o.sy,cy,ap);
-      o.dot.setAttribute("opacity",1); o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-15); o.cd.setAttribute("fill",C.coral); o.cd.textContent="落地 "+mmss(c.landAt-t); }
+      o.dot.setAttribute("opacity",1); o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-15); o.cd.setAttribute("fill",C.coral); o.cd.textContent=TF("d_land_cd",{x:mmss(c.landAt-t)}); }
     else { o.dot.setAttribute("opacity",0); o.cd.setAttribute("opacity",0); o.aura.setAttribute("opacity",0); }
     o.dot.setAttribute("cx",x); o.dot.setAttribute("cy",y);
     o.eye.setAttribute("opacity", t<c.landAt?0.9:0); o.eye.setAttribute("cx",x+3); o.eye.setAttribute("cy",y-2);
@@ -214,9 +216,9 @@ function renderAnim(t, curKey, ts){ if(!anim) return; ts=ts||0;
   if(curKey){ var pu=0.5+0.5*Math.sin(ts*0.012); var col=curKey.type==="send"?C.green:(curKey.type==="land"?C.coral:C.mint);
     var fxX=curKey.type==="send"?bx:cx, fxY=curKey.type==="send"?by:cy;
     anim.fx.setAttribute("opacity",.9); anim.fx.setAttribute("stroke",col); anim.fx.setAttribute("cx",fxX); anim.fx.setAttribute("cy",fxY); anim.fx.setAttribute("r",(16+14*pu).toFixed(1));
-    anim.fxt.setAttribute("opacity",1); anim.fxt.setAttribute("fill",col); anim.fxt.setAttribute("x",fxX); anim.fxt.setAttribute("y",fxY-26); anim.fxt.textContent=curKey.type==="send"?"发兵！":(curKey.type==="land"?"敌落地":"补满！");
+    anim.fxt.setAttribute("opacity",1); anim.fxt.setAttribute("fill",col); anim.fxt.setAttribute("x",fxX); anim.fxt.setAttribute("y",fxY-26); anim.fxt.textContent=curKey.type==="send"?T("d_fx_send"):(curKey.type==="land"?T("d_fx_land"):T("d_fx_refill"));
   } else { anim.fx.setAttribute("opacity",0); anim.fxt.setAttribute("opacity",0); }
-  $("phaselab").textContent = t<GATHER ? "① 敌方集结中（加速）…" : (curKey&&curKey.type==="send"?"② 发兵！就是现在":(curKey&&curKey.type==="land"?"③ 敌落地":(curKey&&curKey.type==="refill"?"✅ 补满·弹回":(sv<0.7?"③ 护盾告急→快补兵":"② 敌方来袭→盯落地"))));
+  $("phaselab").textContent = t<GATHER ? T("d_ph_gather") : (curKey&&curKey.type==="send"?T("d_ph_send"):(curKey&&curKey.type==="land"?T("d_ph_land"):(curKey&&curKey.type==="refill"?T("d_ph_refill"):(sv<0.7?T("d_ph_low"):T("d_ph_inc")))));
   // timeline playheads + emphasis (same t → matched)
   var hp=pct(t);
   document.querySelectorAll("#refillPanel .lane").forEach(function(L){ var i=+L.getAttribute("data-i");
@@ -241,54 +243,59 @@ function frame(ts){ if(lastTs==null)lastTs=ts; var dt=(ts-lastTs)/1000; lastTs=t
   renderAnim(tNow, curKey, ts); requestAnimationFrame(frame); }
 
 /* ---- data: cloud plan + local override ---- */
-function setNet(s,t){$("netdot").className="dot"+(s?(" "+s):"");$("netlab").textContent=t;}
+var netState={s:"",key:"d_net_connecting",vars:{}};
+function setNet(s,key,vars){ netState={s:s,key:key,vars:vars||{}}; renderNet(); }
+function renderNet(){ $("netdot").className="dot"+(netState.s?(" "+netState.s):""); $("netlab").textContent=TF(netState.key,netState.vars); }
 function pickEnemies(){ enemies=(useLocalFlag&&localEnemies.length)?localEnemies.slice():cloudEnemies.slice(); rebuildAll(); }
 function rebuildAll(){ rebuild(); renderStrips(); }
-function loadPlan(){ setNet("","连接云端中…");
+function loadPlan(){ setNet("","d_net_connecting");
   fetch(WBASE+"/plan",{cache:"no-store"}).then(function(r){return r.json();}).then(function(o){ var p=o&&o.plan; baseUpdatedAt=o&&o.updatedAt||null;
     cloudEnemies=(p&&p.enemyWhales||[]).map(function(e){return {name:e.name||"",mm:+e.mm||0,ss:+e.ss||0};});
-    setNet("live", o&&o.updatedAt ? ("已连接 · "+(o.updatedBy||"—")+" 于 "+clk(Date.parse(o.updatedAt))+" UTC 发布敌鲸") : "已连接 · 管理还没发布敌鲸");
+    if(o&&o.updatedAt) setNet("live","d_net_pub",{who:(o.updatedBy||"—"),t:clk(Date.parse(o.updatedAt))}); else setNet("live","d_net_nopub",{});
     pickEnemies();
-  }).catch(function(){ setNet("off","离线 · 用默认/本机"); cloudEnemies=[]; pickEnemies(); }); }
+  }).catch(function(){ setNet("off","d_net_off",{}); cloudEnemies=[]; pickEnemies(); }); }
 
 function lsLocal(){ try{return JSON.parse(localStorage.getItem(LS_LOCAL)||"[]");}catch(e){return[];} }
 function saveLocal(){ try{localStorage.setItem(LS_LOCAL,JSON.stringify(localEnemies));}catch(e){} }
 function renderLocal(){ var box=$("localList"); box.innerHTML=""; localEnemies.forEach(function(e,i){ box.appendChild(enemyRow(e,function(){localEnemies.splice(i,1);saveLocal();renderLocal();if(useLocalFlag)pickEnemies();},function(){saveLocal();if(useLocalFlag)pickEnemies();})); }); }
 function enemyRow(e,onDel,onChg){ var el=document.createElement("div"); el.className="foe";
-  el.innerHTML='<div class="r1"><input class="nm" placeholder="敌鲸名" value="'+esc(e.name||"")+'" data-k="name">'+
-    '<span class="mmss"><input type="number" min="0" value="'+(e.mm||0)+'" data-k="mm" style="width:46px;text-align:center;font-family:var(--mono)"><span class="u">分</span><span class="c">:</span>'+
-    '<input type="number" min="0" max="59" value="'+(e.ss||0)+'" data-k="ss" style="width:46px;text-align:center;font-family:var(--mono)"><span class="u">秒</span></span>'+
+  el.innerHTML='<div class="r1"><input class="nm" placeholder="'+esc(T("d_whale_ph"))+'" value="'+esc(e.name||"")+'" data-k="name">'+
+    '<span class="mmss"><input type="number" min="0" value="'+(e.mm||0)+'" data-k="mm" style="width:46px;text-align:center;font-family:var(--mono)"><span class="u">'+T("unit_min")+'</span><span class="c">:</span>'+
+    '<input type="number" min="0" max="59" value="'+(e.ss||0)+'" data-k="ss" style="width:46px;text-align:center;font-family:var(--mono)"><span class="u">'+T("unit_sec")+'</span></span>'+
     '<button class="del">×</button></div>';
   el.addEventListener("input",function(ev){var k=ev.target.getAttribute("data-k");if(!k)return;var v=ev.target.value; if(k==="mm")v=Math.max(0,+v||0); if(k==="ss")v=Math.min(59,Math.max(0,+v||0)); e[k]=(k==="name")?v:(+v||0); onChg&&onChg();});
   el.querySelector(".del").addEventListener("click",function(){onDel&&onDel();}); return el; }
 var adminEnemies=[];
 function renderAdmin(){ var box=$("enemyList"); box.innerHTML=""; adminEnemies.forEach(function(e,i){ box.appendChild(enemyRow(e,function(){adminEnemies.splice(i,1);renderAdmin();},null)); }); }
-function publish(){ var b=$("pubBtn"); b.disabled=true; var old=b.textContent; b.textContent="发布中…";
+function publish(){ var b=$("pubBtn"); b.disabled=true; var old=b.textContent; b.textContent=T("d_publishing");
   var plan={v:6,side:"right",tactics:"",castleWhales:[],turretLeaders:["","","",""],enemyWhales:adminEnemies.map(function(e){return {name:(e.name||"").slice(0,16),mm:+e.mm||0,ss:+e.ss||0};}),giftCodes:[]};
   authedFetch("/plan",{name:adminName,plan:plan,baseUpdatedAt:baseUpdatedAt}).then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
    .then(function(res){ b.disabled=false;b.textContent=old;
-     if(res.s===200&&res.j.ok){ baseUpdatedAt=res.j.updatedAt; $("pubMsg").innerHTML='<span style="color:var(--green-deep)">✓ 已发布给全队</span>'; toast("已发布 ✓"); loadPlan(); }
-     else if(res.s===409){ if(confirm("有人刚发布了新版，覆盖？")){ baseUpdatedAt=res.j.current?res.j.current.updatedAt:baseUpdatedAt; publish(); } }
-     else $("pubMsg").innerHTML='<span style="color:var(--coral)">发布失败（密码或网络）</span>'; })
-   .catch(function(){ b.disabled=false;b.textContent=old; $("pubMsg").innerHTML='<span style="color:var(--coral)">网络错误</span>'; }); }
+     if(res.s===200&&res.j.ok){ baseUpdatedAt=res.j.updatedAt; $("pubMsg").innerHTML='<span style="color:var(--green-deep)">'+T("d_pub_ok")+'</span>'; toast(T("d_t_pub")); loadPlan(); }
+     else if(res.s===409){ if(confirm(T("d_confirm_over"))){ baseUpdatedAt=res.j.current?res.j.current.updatedAt:baseUpdatedAt; publish(); } }
+     else $("pubMsg").innerHTML='<span style="color:var(--coral)">'+T("d_pub_fail")+'</span>'; })
+   .catch(function(){ b.disabled=false;b.textContent=old; $("pubMsg").innerHTML='<span style="color:var(--coral)">'+T("d_pub_neterr")+'</span>'; }); }
 
 /* ---- wire ---- */
 ["me_mm","me_ss"].forEach(function(id){$(id).addEventListener("input",function(){rebuildAll();});});
 $("pp").addEventListener("click",function(){playing=!playing;$("pp").textContent=playing?"⏸":"▶";lastTs=null;});
 $("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶"; anim.p=(+$("scrub").value)/1000; anim.holdUntil=0; tNow=invmap(anim.p); renderAnim(tNow,null,0);});
-$("addLocal").addEventListener("click",function(){localEnemies.push({name:"敌"+String.fromCharCode(65+localEnemies.length),mm:1,ss:0});saveLocal();renderLocal();});
-$("useLocal").addEventListener("click",function(){useLocalFlag=true;pickEnemies();toast("已用本机敌鲸");});
-$("useCloud").addEventListener("click",function(){useLocalFlag=false;pickEnemies();toast("已用管理发布的");});
-$("addEnemy").addEventListener("click",function(){adminEnemies.push({name:"敌"+String.fromCharCode(65+adminEnemies.length),mm:1,ss:0});renderAdmin();});
+$("addLocal").addEventListener("click",function(){localEnemies.push({name:T("d_enemy")+String.fromCharCode(65+localEnemies.length),mm:1,ss:0});saveLocal();renderLocal();});
+$("useLocal").addEventListener("click",function(){useLocalFlag=true;pickEnemies();toast(T("d_t_local"));});
+$("useCloud").addEventListener("click",function(){useLocalFlag=false;pickEnemies();toast(T("d_t_cloud"));});
+$("addEnemy").addEventListener("click",function(){adminEnemies.push({name:T("d_enemy")+String.fromCharCode(65+adminEnemies.length),mm:1,ss:0});renderAdmin();});
 $("pubBtn").addEventListener("click",publish);
-$("adminUnlock").addEventListener("click",function(){ requireAuth("管理密码：").then(function(ok){ if(!ok) return;
+$("adminUnlock").addEventListener("click",function(){ requireAuth(T("d_pw_admin")).then(function(ok){ if(!ok) return;
   try{ var s=JSON.parse(localStorage.getItem(LS_NAME)||"null"); if(s&&s.name) adminName=s.name; }catch(e){}
-  if(!adminName){ adminName="管理"; try{localStorage.setItem(LS_NAME,JSON.stringify({ok:true,name:adminName}));}catch(e){} }
-  adminEnemies=(cloudEnemies.length?cloudEnemies:[{name:"敌A",mm:1,ss:10}]).map(function(e){return {name:e.name,mm:e.mm,ss:e.ss};});
-  $("adminGate").classList.add("hide"); $("adminBody").classList.remove("hide"); renderAdmin(); toast("已解锁管理 ✓"); }); });
+  if(!adminName){ adminName=T("d_admin"); try{localStorage.setItem(LS_NAME,JSON.stringify({ok:true,name:adminName}));}catch(e){} }
+  adminEnemies=(cloudEnemies.length?cloudEnemies:[{name:T("d_enemy")+"A",mm:1,ss:10}]).map(function(e){return {name:e.name,mm:e.mm,ss:e.ss};});
+  $("adminGate").classList.add("hide"); $("adminBody").classList.remove("hide"); renderAdmin(); toast(T("d_t_unlock")); }); });
+
+/* re-render on language switch */
+window.onLangChange=function(){ rebuildAll(); renderLocal(); if(!$("adminBody").classList.contains("hide")) renderAdmin(); renderNet(); };
 
 /* ---- init ---- */
-localEnemies=lsLocal(); buildBase(); renderLocal(); loadPlan(); startClock(); requestAnimationFrame(frame);
+localEnemies=lsLocal(); buildBase(); renderLocal(); loadPlan(); startClock(); initI18n(); requestAnimationFrame(frame);
 })();
 </script>
 </body>

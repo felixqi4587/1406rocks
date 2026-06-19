@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f8f8f0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>咸鱼小队 · 防守支援</title>
+<link rel="stylesheet" href="app.css">
+<style>
+  .lane .mk{width:78px}
+  .lane.now .mk.send .dot{box-shadow:0 0 0 6px rgba(111,186,44,.25)}
+  .lane .mk.land .dot.two{background:linear-gradient(90deg,var(--coral) 0 50%,var(--mint) 50% 100%)}
+  .lane .mk.land .t{color:var(--coral)}
+  .lane .gaplab{position:absolute;top:38px;transform:translateX(-50%);font-size:10px;font-weight:800;color:var(--brown2);white-space:nowrap}
+  .fire{display:inline-block;background:var(--green);color:#fff;font-weight:900;font-size:11px;padding:2px 9px;border-radius:20px;margin-left:6px;animation:pop .5s ease}
+  @keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="sig" aria-hidden="true"><svg viewBox="0 0 64 48" width="34" height="26"><path d="M40 24 C40 12 22 10 12 16 C4 21 4 27 12 32 C22 38 40 36 40 24 Z" fill="currentColor"/><path d="M40 24 L58 12 L54 24 L58 36 Z" fill="currentColor"/><circle cx="20" cy="22" r="2.6" fill="#fffdf6"/></svg></span>
+    <div><h1>防守支援</h1><div class="sub">咸鱼小队 · 几点发补兵、护住王城</div></div>
+    <div class="clock"><span id="utc">--:--:--</span><small>UTC · 本地 <span id="loc">--:--:--</span></small></div>
+  </div>
+  <div class="viewtabs">
+    <a href="index.html">🐟 首页</a>
+    <a class="on">🛡️ 防守</a>
+    <a href="gift.html">🎁 礼包码</a>
+  </div>
+  <div class="statusbar"><span class="dot" id="netdot"></span><span id="netlab">连接云端中…</span></div>
+
+  <main>
+  <div class="card hero">
+    <div class="herohead"><span class="step">①</span>先填这一个：你到王城的行军时间</div>
+    <div class="herosub">游戏里开一次集结、看一眼到王城的行军时间填进来 —— 下方就会告诉你 <b>每条敌鲸该几点发补兵</b>，正好在它落地后约 1 秒补满、把它弹回去。</div>
+    <div class="mmss"><input id="me_mm" type="number" min="0" value="1"><span class="u">分</span><span class="c">:</span><input id="me_ss" type="number" min="0" max="59" value="20"><span class="u">秒</span><span style="margin-left:auto;font-size:11px;color:var(--brown3)">通常 1 分多</span></div>
+  </div>
+
+  <div class="pond">
+    <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
+    <div class="phaselab" id="phaselab">敌方来袭 → 卡间隙补满</div>
+    <div class="leg">🔴 敌鲸来袭<br>🛡️ 你的补兵<br>🏰 王城护盾</div>
+    <svg viewBox="0 0 360 210" id="svg"></svg>
+  </div>
+  <div class="ctrl">
+    <button id="pp">⏸</button>
+    <input type="range" id="scrub" min="0" max="100" value="0">
+  </div>
+
+  <div class="card">
+    <h2>🛡️ 补兵时机尺（按你的行军算）</h2>
+    <p class="hint">挑当场正在来袭的那条敌鲸，照大字发兵。补兵带纯兵、可加速。绿点=你发兵的精确时刻（已扣掉你的行军），红点=敌落地，蓝点=补满。</p>
+    <div id="refillPanel"></div>
+  </div>
+
+  <details>
+    <summary>🔧 我自己设敌鲸（仅本机，临时试算）</summary>
+    <p class="hint" style="margin:2px 0 9px">默认用管理发布的敌鲸时间。想自己试算就在这里加/改（只存你本机、不影响别人）。清空则回到管理发布的。</p>
+    <div id="localList"></div>
+    <button class="add" id="addLocal">＋ 加一条敌鲸</button>
+    <div class="row" style="margin-top:9px;gap:8px">
+      <button class="btn" id="useLocal" style="flex:1">用我本机的</button>
+      <button class="btn" id="useCloud" style="flex:1">用管理发布的</button>
+    </div>
+  </details>
+
+  <details id="adminFold">
+    <summary>🎯 管理：设敌方鲸鱼并发布（需密码）</summary>
+    <p class="hint" style="margin:2px 0 9px">设好敌鲸到王城的行军时间并发布，全队防守者打开就能看到、各自填自己行军即可。</p>
+    <div id="adminGate"><button class="btn amber full" id="adminUnlock">🔓 输入密码解锁管理</button></div>
+    <div id="adminBody" class="hide">
+      <div id="enemyList"></div>
+      <button class="add" id="addEnemy">＋ 加敌鲸</button>
+      <button class="btn green full" id="pubBtn" style="margin-top:10px">📣 发布给全队</button>
+      <div id="pubMsg" class="hint" style="margin-top:8px"></div>
+    </div>
+  </details>
+
+  <p class="foot">行军时间随距离与加速变化，请游戏内实测。咸鱼小队自用、非官方、与 Century Games 无关 🐟</p>
+  </main>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+(function(){
+"use strict";
+var GATHER=300, DELTA=1;                 // 敌集结固定 5:00；补兵落地后≈1秒到（防早到）
+var NS="http://www.w3.org/2000/svg", uid=1;
+var C={mint:"#19c8b9",mintDeep:"#0fa193",green:"#6fba2c",coral:"#e05a5a",brown:"#794f27",cream:"#fffdf6",yellow:"#f5c31c"};
+var LS_LOCAL="saltyfish_enemies", LS_NAME="rocks1406_admin";
+var enemies=[];          // active set used for render: [{name,mm,ss}]
+var cloudEnemies=[];     // from published plan
+var localEnemies=[];     // player's local override
+var useLocalFlag=false;
+var baseUpdatedAt=null, adminName="";
+
+function march(o){return (o.mm||0)*60+(o.ss||0);}
+function pad(n){return (n<10?"0":"")+n;}
+function mmss(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+":"+pad(s%60);}
+function myMarch(){return (+$("me_mm").value||0)*60+(+$("me_ss").value||0);}
+function E(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
+function lerp(a,b,p){return a+(b-a)*p;} function cl(x){return x<0?0:x>1?1:x;} function sg(t,a,b){return b<=a?(t>=b?1:0):cl((t-a)/(b-a));}
+
+/* ---------- per-enemy timing ---------- */
+function calc(e){ var em=march(e), landAt=GATHER+em, refillAt=landAt+DELTA, R=myMarch(), sendAt=Math.max(0,refillAt-R);
+  var cue, gatherRemain=R-em-DELTA;
+  if(R<=0) cue="先填你的行军时间";
+  else if(gatherRemain>0) cue="他集结剩 "+mmss(gatherRemain)+" 时发兵";
+  else { var inc=R-DELTA; cue= inc<=0 ? "他发车后立刻发（你很快）" : "来袭落地倒计时 "+mmss(inc)+" 时发兵"; }
+  return {name:e.name||"敌鲸",em:em,landAt:landAt,refillAt:refillAt,sendAt:sendAt,R:R,cue:cue,ready:R>0}; }
+
+/* ---------- timeline strips (precise mm:ss) ---------- */
+function renderStrips(){ var box=$("refillPanel"); box.innerHTML="";
+  if(!enemies.length){ box.innerHTML='<p class="hint">管理员还没发布敌方鲸鱼；战时可口头报点，或在上面「我自己设敌鲸」临时试算。</p>'; return; }
+  enemies.forEach(function(e){ var c=calc(e);
+    var s=c.sendAt, f=c.refillAt, gap=Math.max(1,f-s);
+    var win0=s-gap*0.20, win1=f+gap*0.20, span=Math.max(1,win1-win0);
+    function px(t){var p=(t-win0)/span*100;return Math.max(8,Math.min(92,p)).toFixed(1)+"%";}
+    var el=document.createElement("div"); el.className="lane"; el.setAttribute("data-send",s); el.setAttribute("data-land",c.landAt);
+    el.innerHTML=
+      '<div class="lname">🔴 '+esc(e.name||"敌鲸")+' · 行军 '+mmss(c.em)+'</div>'+
+      '<div class="track"></div>'+
+      '<div class="gaplab" style="left:'+(((s+f)/2-win0)/span*100).toFixed(1)+'%">你行军 '+mmss(c.R)+'</div>'+
+      '<div class="head" style="left:'+px(s)+'"></div>'+
+      '<div class="mk send" style="left:'+px(s)+'"><div class="dot"></div><div class="t">'+mmss(s)+'</div><div class="l">你发兵</div></div>'+
+      '<div class="mk land" style="left:'+px(c.landAt)+'"><div class="dot two"></div><div class="t">'+mmss(c.landAt)+'</div><div class="l">敌落地·补满✓</div></div>';
+    box.appendChild(el);
+    // big cue row
+    var cue=document.createElement("div"); cue.className="erow";
+    cue.innerHTML='<div class="et"><b>'+esc(e.name||"敌鲸")+'</b> · 你行军 '+mmss(c.R)+'</div>'+
+      '<div class="cue" data-cue>'+(c.ready?esc(c.cue):'<span style="color:var(--brown3)">'+esc(c.cue)+'</span>')+'</div>'+
+      (c.ready?'<div class="note">补兵在它落地后≈'+DELTA+'秒到，正好补满 ✓</div>':'');
+    box.appendChild(cue);
+  });
+}
+function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");}
+
+/* ---------- pond radar animation ---------- */
+var svgEl, cx=180, cy=98, bx=180, by=178, anim=null, Tend=400;
+function buildBase(){ svgEl=$("svg"); svgEl.innerHTML="";
+  // water rings
+  svgEl.appendChild(E("circle",{cx:cx,cy:cy,r:78,fill:"none",stroke:"#a7e6dd","stroke-width":2,opacity:.7}));
+  svgEl.appendChild(E("circle",{cx:cx,cy:cy,r:50,fill:"none",stroke:"#a7e6dd","stroke-width":2,opacity:.5}));
+}
+function rebuild(){ buildBase(); anim={};
+  var R=myMarch();
+  // castle
+  anim.castle=E("rect",{x:cx-20,y:cy-17,width:40,height:34,rx:9,fill:"#fce3b8",stroke:C.brown,"stroke-width":3}); svgEl.appendChild(anim.castle);
+  svgEl.appendChild(E("rect",{x:cx-20,y:cy-24,width:8,height:9,rx:2,fill:C.brown}));
+  svgEl.appendChild(E("rect",{x:cx-4,y:cy-24,width:8,height:9,rx:2,fill:C.brown}));
+  svgEl.appendChild(E("rect",{x:cx+12,y:cy-24,width:8,height:9,rx:2,fill:C.brown}));
+  // shield bar
+  svgEl.appendChild(E("rect",{x:cx-30,y:cy+24,width:60,height:9,rx:4.5,fill:"#eadfca",stroke:"#d8cfb9","stroke-width":1}));
+  anim.bar=E("rect",{x:cx-29,y:cy+25,width:58,height:7,rx:3.5,fill:C.green}); svgEl.appendChild(anim.bar);
+  anim.imp=E("circle",{cx:cx,cy:cy,r:18,fill:"none",stroke:C.coral,"stroke-width":3,opacity:0}); svgEl.appendChild(anim.imp);
+  anim.glow=E("circle",{cx:cx,cy:cy,r:28,fill:"none",stroke:C.mint,"stroke-width":3,opacity:0}); svgEl.appendChild(anim.glow);
+  // your barracks (bottom)
+  svgEl.appendChild(E("rect",{x:bx-9,y:by-9,width:18,height:18,rx:5,fill:"#dff7f2",stroke:C.mintDeep,"stroke-width":2.5}));
+  svgEl.appendChild(E("text",{x:bx,y:by+4,"text-anchor":"middle","font-size":10}, )).textContent="🛡️";
+  // enemies
+  var Ed=enemies.length?enemies:[{name:"敌A",mm:1,ss:10}];
+  var n=Ed.length, maxLand=0;
+  anim.enemies=Ed.map(function(e,i){ var c=calc(e); maxLand=Math.max(maxLand,c.refillAt);
+    var ang=Math.PI*(0.5 - (n===1?0:(i/(n-1)-0.5))*0.9); // spread across top arc
+    var sx=cx+Math.cos(ang)*150, sy=cy-Math.abs(Math.sin(ang))*92-18;
+    var o={c:c,sx:sx,sy:sy,travel:Math.min(110,c.landAt)};
+    o.dot=E("circle",{cx:sx,cy:sy,r:11,fill:C.coral,opacity:0,stroke:"#fff","stroke-width":2}); svgEl.appendChild(o.dot);
+    o.eye=E("circle",{cx:sx,cy:sy,r:0,fill:"#fff",opacity:0}); svgEl.appendChild(o.eye); // simple
+    o.cd=E("text",{x:sx,y:sy-15,"text-anchor":"middle",fill:C.coral,"font-size":10,"font-weight":800,opacity:0}); svgEl.appendChild(o.cd);
+    o.bub=[0,1,2].map(function(){var d=E("circle",{cx:bx,cy:by,r:4,fill:C.mint,opacity:0,stroke:"#fff","stroke-width":1.5});svgEl.appendChild(d);return d;});
+    return o;
+  });
+  Tend=maxLand+18;
+  anim.Tstart=Math.max(0, Math.min.apply(null, anim.enemies.map(function(o){return o.c.landAt-o.travel;}))-8);
+  var sc=$("scrub"); sc.min=Math.round(anim.Tstart); sc.max=Math.round(Tend);
+  tNow=anim.Tstart;
+}
+function shieldVal(t){ var v=1; anim.enemies.forEach(function(o){ if(t>=o.c.landAt) v-=0.5; if(t>=o.c.refillAt) v+=0.5; }); return cl(v); }
+function renderAnim(t){ if(!anim) return;
+  var sv=shieldVal(t); anim.bar.setAttribute("width",(58*sv).toFixed(1)); anim.bar.setAttribute("fill", sv<0.7?C.coral:C.green);
+  anim.castle.setAttribute("stroke", sv<0.7?C.coral:C.brown);
+  var anyImp=false, anyGlow=false;
+  anim.enemies.forEach(function(o){ var c=o.c;
+    var ap=sg(t, c.landAt-o.travel, c.landAt);
+    if(t<c.landAt-o.travel){ o.dot.setAttribute("opacity",.25); o.cd.setAttribute("opacity",0); o.dot.setAttribute("cx",o.sx);o.dot.setAttribute("cy",o.sy); }
+    else if(t<c.landAt){ o.dot.setAttribute("opacity",1); var x=lerp(o.sx,cx,ap),y=lerp(o.sy,cy,ap); o.dot.setAttribute("cx",x);o.dot.setAttribute("cy",y);
+      o.cd.setAttribute("opacity",1);o.cd.setAttribute("x",x);o.cd.setAttribute("y",y-15);o.cd.textContent="落地 "+(c.landAt-t).toFixed(0)+"s"; }
+    else { o.dot.setAttribute("opacity",0); o.cd.setAttribute("opacity",0); }
+    if(t>=c.landAt && t<c.landAt+1.2) anyImp=true;
+    // your refill bubbles
+    var rp=sg(t,c.sendAt,c.refillAt), on=t>=c.sendAt && t<c.refillAt;
+    o.bub.forEach(function(d,k){ if(on){ var ox=(k-1)*7; d.setAttribute("opacity",.95); d.setAttribute("cx",lerp(bx+ox,cx+ox,rp)); d.setAttribute("cy",lerp(by,cy,rp)); } else d.setAttribute("opacity",0); });
+    if(t>=c.refillAt-0.6 && t<c.refillAt+1.4) anyGlow=true;
+  });
+  if(anyImp){ var ip=(t%1.2)/1.2; anim.imp.setAttribute("opacity",1-ip); anim.imp.setAttribute("r",16+ip*30); } else anim.imp.setAttribute("opacity",0);
+  anim.glow.setAttribute("opacity", anyGlow?0.8:0);
+  // phase label
+  var minLand=Math.min.apply(null,anim.enemies.map(function(o){return o.c.landAt;}));
+  $("phaselab").textContent = t<minLand-1 ? "敌方来袭中…盯紧落地" : (sv<0.7? "护盾告急 → 快补兵！" : "✅ 卡间隙补满、弹回敌人");
+  // sync strips
+  var lanes=document.querySelectorAll("#refillPanel .lane");
+  lanes.forEach(function(L){ var s=+L.getAttribute("data-send"), land=+L.getAttribute("data-land");
+    L.classList.toggle("now", t>=s-3 && t<=land);
+    var h=L.querySelector(".head"); if(h){ /* keep head at send mark (static reference) */ } });
+}
+/* playback */
+var tNow=0,playing=true,lastTs=null,speed=1;
+function frame(ts){ if(lastTs==null)lastTs=ts; var dt=(ts-lastTs)/1000; lastTs=ts; if(!anim){requestAnimationFrame(frame);return;}
+  var Ts=anim.Tstart||0, span=Math.max(1,Tend-Ts); speed=span/7; // action window loops in ~7s
+  if(playing){ tNow=Ts+((tNow-Ts+dt*speed)%span); $("scrub").value=Math.round(tNow); }
+  renderAnim(tNow); requestAnimationFrame(frame); }
+
+/* ---------- data: cloud plan + local override ---------- */
+function setNet(s,t){$("netdot").className="dot"+(s?(" "+s):"");$("netlab").textContent=t;}
+function pickEnemies(){ enemies = (useLocalFlag&&localEnemies.length)?localEnemies.slice() : cloudEnemies.slice(); rebuildAll(); }
+function rebuildAll(){ rebuild(); renderStrips(); }
+function loadPlan(){ setNet("","连接云端中…");
+  fetch(WBASE+"/plan",{cache:"no-store"}).then(function(r){return r.json();}).then(function(o){
+    var p=o&&o.plan; baseUpdatedAt=o&&o.updatedAt||null;
+    cloudEnemies=(p&&p.enemyWhales||[]).map(function(e){return {name:e.name||"",mm:+e.mm||0,ss:+e.ss||0};});
+    if(o&&o.updatedAt) setNet("live","已连接 · "+(o.updatedBy||"—")+" 于 "+clk(Date.parse(o.updatedAt))+" UTC 发布敌鲸");
+    else setNet("live","已连接 · 管理还没发布敌鲸");
+    pickEnemies();
+  }).catch(function(){ setNet("off","离线 · 用默认/本机"); cloudEnemies=[]; pickEnemies(); }); }
+
+/* local override editor */
+function lsLocal(){ try{return JSON.parse(localStorage.getItem(LS_LOCAL)||"[]");}catch(e){return[];} }
+function saveLocal(){ try{localStorage.setItem(LS_LOCAL,JSON.stringify(localEnemies));}catch(e){} }
+function renderLocal(){ var box=$("localList"); box.innerHTML=""; localEnemies.forEach(function(e,i){ box.appendChild(enemyRow(e,function(){localEnemies.splice(i,1);saveLocal();renderLocal();if(useLocalFlag)pickEnemies();},function(){saveLocal();if(useLocalFlag)pickEnemies();})); }); }
+
+/* admin enemy editor (shares the row widget) */
+function enemyRow(e,onDel,onChg){ var el=document.createElement("div"); el.className="foe";
+  el.innerHTML='<div class="r1"><input class="nm" placeholder="敌鲸名" value="'+esc(e.name||"")+'" data-k="name">'+
+    '<span class="mmss"><input type="number" min="0" value="'+(e.mm||0)+'" data-k="mm" style="width:46px;text-align:center;font-family:var(--mono)"><span class="u">分</span><span class="c">:</span>'+
+    '<input type="number" min="0" max="59" value="'+pad(e.ss||0)+'" data-k="ss" style="width:46px;text-align:center;font-family:var(--mono)"><span class="u">秒</span></span>'+
+    '<button class="del">×</button></div>';
+  el.addEventListener("input",function(ev){var k=ev.target.getAttribute("data-k");if(!k)return;var v=ev.target.value; if(k==="mm")v=Math.max(0,+v||0); if(k==="ss")v=Math.min(59,Math.max(0,+v||0)); e[k]=(k==="name")?v:(+v||0); onChg&&onChg();});
+  el.querySelector(".del").addEventListener("click",function(){onDel&&onDel();});
+  return el; }
+
+var adminEnemies=[];
+function renderAdmin(){ var box=$("enemyList"); box.innerHTML=""; adminEnemies.forEach(function(e,i){ box.appendChild(enemyRow(e,function(){adminEnemies.splice(i,1);renderAdmin();},null)); }); }
+function publish(){ var b=$("pubBtn"); b.disabled=true; var old=b.textContent; b.textContent="发布中…";
+  var plan={v:6,side:"right",tactics:"",castleWhales:[],turretLeaders:["","","",""],
+    enemyWhales:adminEnemies.map(function(e){return {name:(e.name||"").slice(0,16),mm:+e.mm||0,ss:+e.ss||0};}),giftCodes:[]};
+  authedFetch("/plan",{name:adminName,plan:plan,baseUpdatedAt:baseUpdatedAt})
+   .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
+   .then(function(res){ b.disabled=false;b.textContent=old;
+     if(res.s===200&&res.j.ok){ baseUpdatedAt=res.j.updatedAt; $("pubMsg").innerHTML='<span style="color:var(--green-deep)">✓ 已发布给全队</span>'; toast("已发布 ✓"); loadPlan(); }
+     else if(res.s===409){ if(confirm("有人刚发布了新版，覆盖？")){ baseUpdatedAt=res.j.current?res.j.current.updatedAt:baseUpdatedAt; publish(); } }
+     else $("pubMsg").innerHTML='<span style="color:var(--coral)">发布失败（密码或网络）</span>'; })
+   .catch(function(){ b.disabled=false;b.textContent=old; $("pubMsg").innerHTML='<span style="color:var(--coral)">网络错误</span>'; }); }
+
+/* ---------- wire ---------- */
+["me_mm","me_ss"].forEach(function(id){$(id).addEventListener("input",function(){rebuildAll();});});
+$("pp").addEventListener("click",function(){playing=!playing;$("pp").textContent=playing?"⏸":"▶";lastTs=null;});
+$("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶";tNow=+$("scrub").value;renderAnim(tNow);});
+$("addLocal").addEventListener("click",function(){localEnemies.push({name:"敌"+String.fromCharCode(65+localEnemies.length),mm:1,ss:0});saveLocal();renderLocal();});
+$("useLocal").addEventListener("click",function(){useLocalFlag=true;pickEnemies();toast("已用本机敌鲸");});
+$("useCloud").addEventListener("click",function(){useLocalFlag=false;pickEnemies();toast("已用管理发布的");});
+$("addEnemy").addEventListener("click",function(){adminEnemies.push({name:"敌"+String.fromCharCode(65+adminEnemies.length),mm:1,ss:0});renderAdmin();});
+$("pubBtn").addEventListener("click",publish);
+$("adminUnlock").addEventListener("click",function(){ requireAuth("管理密码：").then(function(ok){ if(!ok) return;
+  try{ var s=JSON.parse(localStorage.getItem(LS_NAME)||"null"); if(s&&s.name) adminName=s.name; }catch(e){}
+  if(!adminName){ adminName=(prompt("你的名字（署名，可留空）：")||"").trim().slice(0,24); try{localStorage.setItem(LS_NAME,JSON.stringify({ok:true,name:adminName}));}catch(e){} }
+  adminEnemies = (cloudEnemies.length?cloudEnemies:[{name:"敌A",mm:1,ss:10}]).map(function(e){return {name:e.name,mm:e.mm,ss:e.ss};});
+  $("adminGate").classList.add("hide"); $("adminBody").classList.remove("hide"); renderAdmin(); toast("已解锁管理 ✓"); }); });
+
+/* ---------- init ---------- */
+localEnemies=lsLocal();
+buildBase(); renderLocal(); loadPlan();
+startClock();
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

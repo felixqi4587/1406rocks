@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0A05">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>1406rocks · 礼包码</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <span class="sig" aria-hidden="true"><svg viewBox="0 0 120 120" width="30" height="30" fill="none">
+      <path d="M60 14 C60 14 84 22 98 22 C98 22 100 60 96 76 C91 95 74 104 60 110 C46 104 29 95 24 76 C20 60 22 22 22 22 C36 22 60 14 60 14 Z" stroke="currentColor" stroke-width="6" stroke-linejoin="round"/>
+      <path d="M60 84 C50 84 43 78 43 69 C43 60 50 56 60 56 C70 56 77 60 77 69 C77 78 70 84 60 84 Z" fill="currentColor"/>
+      <ellipse cx="44" cy="50" rx="5" ry="6.5" fill="currentColor"/><ellipse cx="55" cy="44" rx="5" ry="6.5" fill="currentColor"/>
+      <ellipse cx="66" cy="44" rx="5" ry="6.5" fill="currentColor"/><ellipse cx="77" cy="50" rx="5" ry="6.5" fill="currentColor"/></svg></span>
+    <div><h1>1406 ROCKS</h1><div class="sub">礼包码 · 全自动兑换</div></div>
+    <div class="clock"><span id="utc">--:--:--</span><small>UTC · 本地 <span id="loc">--:--:--</span></small></div>
+  </div>
+  <div class="viewtabs" id="viewtabs">
+    <button data-nav="index.html">⚔️ 王城战</button>
+    <button class="on">🎁 礼包码</button>
+  </div>
+
+  <!-- 密码门：未通过则只显示这块 -->
+  <div id="gate" class="card hero hide" style="text-align:center">
+    <div class="herohead" style="justify-content:center"><span class="step">🔒</span>需要管理密码</div>
+    <div class="herosub" style="margin:10px 0 14px">礼包码兑换是管理功能，输入密码后才能进入 / 修改。</div>
+    <button class="btn amber full" id="gateBtn">输入密码进入</button>
+    <div style="margin-top:12px"><a href="index.html" style="color:var(--t2);font-size:13px;text-decoration:none">← 返回王城战</a></div>
+  </div>
+
+  <!-- 礼包码主体：通过密码后显示 -->
+  <div id="giftbody" class="hide">
+    <div class="card hero">
+      <div class="herohead"><span class="step">🎁</span>全自动兑换</div>
+      <div class="herosub">队员零操作。官方 Discord 直连每分钟读 + 三方源每 5 分钟兜底，发现新码<b>全队自动秒兑</b>。</div>
+      <div id="discordStatus" class="hint" style="margin-top:10px">检查连接中…</div>
+      <details style="background:none;border:none;box-shadow:none;padding:0;margin:8px 0 0">
+        <summary style="font-size:13px;padding:8px 0">⚙️ 设置 / 更换 官方 Discord Bot Token</summary>
+        <p class="hint" style="margin:2px 0 9px">粘 <b>1406rocks-codebot</b> 的 Bot Token，云端即每分钟直读你关注的官方发码频道。Token 只存你自己的云端。</p>
+        <div style="display:flex;gap:8px">
+          <input id="dToken" type="password" placeholder="粘贴 Bot Token" autocomplete="off" spellcheck="false"
+            style="flex:1;min-width:0;padding:11px 12px;border:1px solid var(--gold-line);border-radius:10px;background:var(--surface);color:var(--tx);font-size:13px">
+          <button class="btn amber" id="dTokenBtn" style="white-space:nowrap;width:auto;padding:0 16px">连接</button>
+        </div>
+        <div id="dTokenMsg" class="hint" style="margin-top:8px"></div>
+      </details>
+    </div>
+    <div class="card">
+      <h2>👥 队员名单</h2>
+      <p class="hint">名字（备注）+ Player ID（游戏内点左上角头像可看到）。<b>改动自动保存。</b></p>
+      <div id="rosterList"></div>
+      <button class="add" id="addMember">＋ 加队员</button>
+      <div id="rosterSave" class="hint" style="margin-top:9px">改动会自动保存到云端</div>
+    </div>
+    <div class="card">
+      <h2>🎟 当前可用礼包码</h2>
+      <div id="autoCodes" class="hint">加载中…</div>
+      <details style="background:none;border:none;box-shadow:none;padding:0;margin:12px 0 0">
+        <summary style="font-size:13px;padding:6px 0">📜 历史码（已过期 / 已用尽）</summary>
+        <div id="codeHistory" class="hint" style="margin-top:6px">—</div>
+      </details>
+    </div>
+    <div class="card">
+      <button class="btn amber full" id="runRedeem">▶ 立即云端兑换全队</button>
+      <div id="redeemLog" style="margin-top:10px"></div>
+    </div>
+    <details>
+      <summary>📥 手动喂码（备用·看到码立刻抢）</summary>
+      <p class="hint" style="margin:2px 0 9px">在官方 Discord 看到新码？把码或整段消息粘进来，云端立刻全队抢兑，不等巡检。</p>
+      <div style="display:flex;gap:8px">
+        <input id="ingestCode" type="text" placeholder="粘贴官方码 或 整段消息" autocomplete="off" spellcheck="false"
+          style="flex:1;min-width:0;padding:11px 12px;border:1px solid var(--gold-line);border-radius:10px;background:var(--surface);color:var(--tx);font-size:14px">
+        <button class="btn amber" id="ingestBtn" style="white-space:nowrap;width:auto;padding:0 16px">⚡ 立即抢</button>
+      </div>
+      <div id="ingestMsg" class="hint" style="margin-top:8px;margin-bottom:8px"></div>
+    </details>
+  </div>
+
+  <p class="foot">礼包码由官方 Discord 直连 + 多个社区源自动收集；有效性以官方兑换接口实测为准。本工具为 1406 玩家自制、非官方、与 Century Games 无关。</p>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+<script>
+(function(){
+"use strict";
+var LS_ROSTER="rocks1406_roster";
+var roster=[], rosterSaveT=null, rosterLoaded=false, rosterDirty=false;
+
+/* ---------- roster ---------- */
+function renderRoster(){ var box=$("rosterList"); if(!box) return; box.innerHTML="";
+  if(!roster.length){ box.innerHTML='<p class="hint">还没有队员，点下方「＋ 加队员」。</p>'; }
+  roster.forEach(function(m,idx){ var el=document.createElement("div"); el.className="whale";
+    el.innerHTML='<div class="r1"><input class="nm" placeholder="名字/备注" value="'+esc(m.name||"")+'" data-k="name">'+
+      '<input class="nm" inputmode="numeric" placeholder="Player ID" value="'+esc(m.fid||"")+'" data-k="fid" style="flex:0 0 132px;font-family:var(--mono)">'+
+      '<button class="del">×</button></div>';
+    el.addEventListener("input",function(e){var k=e.target.getAttribute("data-k");if(!k)return; m[k]= (k==="fid"? e.target.value.replace(/\D/g,"") : e.target.value); scheduleSave();});
+    el.querySelector(".del").addEventListener("click",function(){roster.splice(idx,1);renderRoster();scheduleSave();});
+    box.appendChild(el); }); }
+function lsRoster(){ try{return JSON.parse(localStorage.getItem(LS_ROSTER)||"[]");}catch(e){return [];} }
+function loadRoster(){
+  var local=lsRoster();
+  if(!rosterDirty && local.length){ roster=local; renderRoster(); }
+  authedFetch("/roster",{})
+   .then(function(r){return r.json();}).then(function(j){ rosterLoaded=true; if(rosterDirty) return;
+     var cloud=(j&&j.roster)||[];
+     if(cloud.length){ roster=cloud; try{localStorage.setItem(LS_ROSTER,JSON.stringify(cloud));}catch(e){} renderRoster(); }
+     else if(local.length){ roster=local; renderRoster(); saveRosterNow(true); }
+     else { roster=[]; renderRoster(); } })
+   .catch(function(){ if(!rosterDirty && local.length){ roster=local; renderRoster(); } }); }
+function setSaveStatus(t){ var s=$("rosterSave"); if(s) s.textContent=t; }
+function scheduleSave(){ rosterDirty=true; try{localStorage.setItem(LS_ROSTER,JSON.stringify(roster));}catch(e){} setSaveStatus("保存中…"); clearTimeout(rosterSaveT); rosterSaveT=setTimeout(function(){saveRosterNow(false);},700); }
+function saveRosterNow(silent){ try{localStorage.setItem(LS_ROSTER,JSON.stringify(roster));}catch(e){}
+  authedFetch("/roster",{roster:roster})
+   .then(function(r){return r.json();}).then(function(j){ setSaveStatus((j&&j.ok)?"已保存（云端+本机）✓":"已存本机，云端稍后重试"); })
+   .catch(function(){ setSaveStatus("已存本机，云端失败（稍后重试）"); }); }
+
+/* ---------- codes + history ---------- */
+function loadAutoCodes(){ var box=$("autoCodes"); if(!box) return; box.textContent="加载中…";
+  fetch(WBASE+"/codes",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){ var cs=(j&&j.codes)||[];
+    box.innerHTML= cs.length? '<div class="chips">'+cs.map(function(c){return '<span class="chip" style="background:var(--acb);border-color:var(--gold-line);color:var(--ac2)">'+esc(c)+'</span>';}).join("")+'</div>' : '<span class="hint">暂无可用码</span>';
+    var hb=$("codeHistory"); if(hb){ var h=(j&&j.history)||[];
+      hb.innerHTML= h.length? '<div class="chips">'+h.map(function(x){var lab=x.status==="usedup"?"已用尽":"已过期";
+        return '<span class="chip" style="opacity:.6;text-decoration:line-through" title="'+lab+'">'+esc(x.code)+'</span>';}).join("")+'</div>' : '<span class="hint">—</span>'; } })
+   .catch(function(){ box.textContent="加载失败"; }); }
+
+/* ---------- redeem log ---------- */
+function statusInfo(s){ var m={ok:["✓ 刚兑换","var(--ok)"],already:["✓ 已兑换","var(--ok)"],expired:["码过期","var(--ac2)"],invalid:["码无效","var(--bad)"],usedup:["已用尽","var(--ac2)"],limited:["⚠ 限量抢光","var(--ac2)"],bad_fid:["FID错误","var(--bad)"],rate:["限流稍后","var(--ac2)"],capped:["超上限,下次","var(--t3)"],err:["失败","var(--bad)"]}; return m[s]||[s,"var(--t2)"]; }
+function renderLog(rec){ var log=$("redeemLog"); if(!log) return;
+  var when=rec&&rec.ranAt?("（"+clk(Date.parse(rec.ranAt))+" UTC）"):"";
+  if(!rec||!rec.results||!rec.results.length){
+    if(rec&&rec.count===0) log.innerHTML='<p class="hint">名单为空——请先在上方添加队员（输入即自动保存到云端）。</p>';
+    else if(rec&&rec.codes&&!rec.codes.length) log.innerHTML='<p class="hint">暂无可兑换的礼包码（系统每分钟自动收码，有新码会自动兑换）。</p>';
+    else log.innerHTML='<p class="hint">暂无结果。</p>';
+    return; }
+  var groups=[], idx={};
+  rec.results.forEach(function(r){ var k=r.fid; if(idx[k]==null){ idx[k]=groups.length; groups.push({fid:r.fid,name:r.name,rows:[]}); } groups[idx[k]].rows.push(r); });
+  var head='<div class="lab" style="margin-top:0">兑换明细 · '+(rec.mode==="auto"?"自动":(rec.mode==="discord"?"Discord":"手动"))+' '+when
+    +(rec.newSuccess?' · <span style="color:var(--ok)">本次新兑 '+rec.newSuccess+'</span>':'')+'</div>';
+  var body=groups.map(function(g){
+    var rows=g.rows.map(function(r){var si=statusInfo(r.status);
+      return '<div style="display:flex;gap:8px;align-items:center;font-size:12.5px;padding:5px 0 5px 10px;border-bottom:1px solid var(--line)">'
+        +'<b style="flex:1;min-width:0;color:var(--ac2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(r.code)+'</b>'
+        +'<span style="color:'+si[1]+';font-weight:700;white-space:nowrap">'+si[0]+'</span></div>'; }).join("");
+    var n=g.rows.filter(function(r){return r.status==="ok"||r.status==="already";}).length;
+    return '<div style="margin-top:10px">'
+      +'<div style="display:flex;gap:8px;align-items:baseline;font-weight:800;font-size:13.5px;padding:4px 0">'
+      +'<span>'+esc(g.name)+'</span><span class="hint" style="font-weight:500">ID '+esc(g.fid)+'</span>'
+      +'<span style="margin-left:auto;color:var(--ok);font-weight:700;font-size:12px">'+n+'/'+g.rows.length+' 已得</span></div>'
+      +rows+'</div>'; }).join("");
+  log.innerHTML=head+body; }
+function loadLast(){ fetch(WBASE+"/lastredeem",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){ if(j&&j.results&&j.results.length) renderLog(j); }).catch(function(){}); }
+function runRedeem(){ var b=$("runRedeem"), old=b.textContent; b.disabled=true; b.textContent="云端兑换中…（约几十秒）";
+  $("redeemLog").innerHTML='<p class="hint">正在云端给全队兑换，请稍候…</p>';
+  authedFetch("/redeem",{})
+   .then(function(r){return r.json();}).then(function(j){ b.disabled=false;b.textContent=old; if(j&&j.ok){ renderLog(j.result); toast("云端兑换完成 ✓"); } else toast("兑换失败"); })
+   .catch(function(){ b.disabled=false;b.textContent=old; toast("网络错误/超时"); }); }
+
+/* ---------- manual feed ---------- */
+function ingestCode(){ var inp=$("ingestCode"), msg=$("ingestMsg"), b=$("ingestBtn"); var text=(inp.value||"").trim();
+  if(!text){ msg.innerHTML='<span style="color:var(--ac2)">先粘贴官方码或消息。</span>'; return; }
+  var old=b.textContent; b.disabled=true; b.textContent="抢兑中…"; msg.innerHTML='正在把码推到云端、立即给全队抢兑…';
+  authedFetch("/ingest",{text:text})
+   .then(function(r){return r.json();}).then(function(j){ b.disabled=false;b.textContent=old;
+     if(j&&j.ok){ var c=(j.candidates||[]);
+       if(!c.length){ msg.innerHTML='<span style="color:var(--ac2)">没识别出码——直接把码本身粘进来再试。</span>'; return; }
+       inp.value=""; msg.innerHTML='✓ 已推送 <b style="color:var(--ac2)">'+c.map(esc).join("、")+'</b>，云端正在给全队抢兑。几秒后下方「立即云端兑换全队」可看到明细。';
+       toast("已推送官方码，云端抢兑中 ⚡"); setTimeout(loadAutoCodes,4000); setTimeout(loadLast,8000); }
+     else msg.innerHTML='<span style="color:var(--bad)">推送失败。</span>'; })
+   .catch(function(){ b.disabled=false;b.textContent=old; msg.innerHTML='<span style="color:var(--bad)">网络错误/超时。</span>'; }); }
+
+/* ---------- discord ---------- */
+function renderDiscordStatus(j){ var s=$("discordStatus"); if(!s) return;
+  if(!j||!j.ok){ s.innerHTML='<span style="color:var(--t3)">状态未知。</span>'; return; }
+  if(!j.connected){ s.innerHTML=j.error?('<span style="color:var(--bad)">未连接：'+esc(j.error)+'</span>'):'<span style="color:var(--t3)">尚未连接官方 Discord（粘贴 Bot Token 即可开启）。</span>'; return; }
+  var chans=(j.channels||[]).map(function(c){return esc(c.name);}).join("、")||"（无可读频道）";
+  s.innerHTML='<span style="color:var(--ok);font-weight:700">● 已连接</span> · 每 1 分钟直读：<b style="color:var(--ac2)">'+chans+'</b>'; }
+function loadDiscordStatus(){ var s=$("discordStatus"); if(!s) return; fetch(WBASE+"/discordstatus",{cache:"no-store"}).then(function(r){return r.json();}).then(renderDiscordStatus).catch(function(){ s.innerHTML='<span style="color:var(--t3)">状态加载失败。</span>'; }); }
+function saveDiscordToken(){ var inp=$("dToken"), msg=$("dTokenMsg"), b=$("dTokenBtn"); var tok=(inp.value||"").trim();
+  if(!tok){ msg.innerHTML='<span style="color:var(--ac2)">先粘贴 Bot Token。</span>'; return; }
+  var old=b.textContent; b.disabled=true; b.textContent="连接中…"; msg.innerHTML='正在验证 token 并读取可见频道…';
+  authedFetch("/discordtoken",{token:tok})
+   .then(function(r){return r.json();}).then(function(j){ b.disabled=false;b.textContent=old;
+     if(j&&j.ok&&!j.error){ inp.value=""; var chans=(j.channels||[]).map(function(c){return esc(c.name);}).join("、")||"（无可读频道，确认 bot 已在你服务器、能看到那个频道）";
+       msg.innerHTML='✓ 已连接！每分钟直读：<b style="color:var(--ac2)">'+chans+'</b>'; toast("官方 Discord 已连接 ✓"); loadDiscordStatus(); }
+     else msg.innerHTML='<span style="color:var(--bad)">连接失败：'+esc((j&&j.error)||"token 无效")+'</span>'; })
+   .catch(function(){ b.disabled=false;b.textContent=old; msg.innerHTML='<span style="color:var(--bad)">网络错误/超时。</span>'; }); }
+
+/* ---------- gate + init ---------- */
+var inited=false;
+function initGift(){ if(inited) return; inited=true;
+  $("addMember").addEventListener("click",function(){roster.push({name:"",fid:""});renderRoster();});
+  $("runRedeem").addEventListener("click",runRedeem);
+  $("ingestBtn").addEventListener("click",ingestCode);
+  $("ingestCode").addEventListener("keydown",function(e){ if(e.key==="Enter") ingestCode(); });
+  $("dTokenBtn").addEventListener("click",saveDiscordToken);
+  $("dToken").addEventListener("keydown",function(e){ if(e.key==="Enter") saveDiscordToken(); });
+  loadAutoCodes(); loadDiscordStatus(); loadRoster(); loadLast();
+}
+function openGate(){
+  requireAuth("管理密码（礼包码）：").then(function(ok){
+    if(ok){ $("gate").classList.add("hide"); $("giftbody").classList.remove("hide"); initGift(); }
+    else { $("gate").classList.remove("hide"); $("giftbody").classList.add("hide"); }
+  });
+}
+$("viewtabs").addEventListener("click",function(e){var b=e.target.closest("[data-nav]");if(!b)return;location.href=b.getAttribute("data-nav");});
+$("gateBtn").addEventListener("click",openGate);
+startClock();
+openGate();
+})();
+</script>
+</body>
+</html>

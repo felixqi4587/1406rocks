@@ -6,45 +6,57 @@
 <meta name="theme-color" content="#f8f8f0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>咸鱼小队 · 防守支援</title>
-<link rel="stylesheet" href="app.css?v=10">
+<link rel="stylesheet" href="app.css?v=11">
 <style>
   /* enemy blocks (clear 敌A/敌B separation) */
   .enemyblock{border:2px solid var(--line);border-radius:20px;padding:8px;margin-bottom:16px;
     background:linear-gradient(180deg,#fffdf6,#fbf7ec);box-shadow:var(--shadow-sm)}
-  .enemyblock .lane{border:0;background:none;box-shadow:none;margin-bottom:8px;min-height:120px;padding:30px 16px 30px}
+  .enemyblock .lane{border:0;background:none;box-shadow:none;margin-bottom:8px;min-height:150px;padding:24px 12px 8px}
   .enemyblock .erow{margin-bottom:0}
-  .lane .mk{width:84px}
-  .lane .mk .l.hi{font-weight:900;font-size:11px;margin-top:3px}
-  .lane .mk.send .dot{transition:box-shadow .15s,transform .15s}
-  /* merged impact marker: 敌落地 and (1s later) 补满 are ~simultaneous → ONE two-tone dot + stacked label */
-  .lane .mk.impact{top:0;width:108px;z-index:3}
-  .lane .mk.impact .il{font-size:9.5px;font-weight:900;color:var(--coral);line-height:1.25;white-space:nowrap}
-  .lane .mk.impact .ir{font-size:9.5px;font-weight:900;color:var(--mint-deep);line-height:1.25;white-space:nowrap;margin-bottom:4px}
-  .lane .mk.impact .dot{width:18px;height:18px;border-radius:50%;margin:0 auto;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.18);position:relative;
-    background:linear-gradient(90deg,var(--coral) 0 50%,var(--mint) 50% 100%)}
-  .lane .mk.impact .dot::after{content:"";position:absolute;left:50%;top:15px;width:2px;height:30px;transform:translateX(-50%);opacity:.4;border-radius:2px;background:linear-gradient(180deg,var(--coral),var(--mint))}
-  /* 你行军 measured span: green band on the ruler from 你发兵 → 补满, with end-caps + pill */
-  .lane .mspan{position:absolute;top:56px;height:10px;border-radius:3px;background:rgba(111,186,44,.20);
-    border-left:2.5px solid var(--green-deep);border-right:2.5px solid var(--green-deep);z-index:1}
-  .lane .mpill{position:absolute;top:39px;transform:translateX(-50%);font-size:9.5px;font-weight:900;color:var(--green-deep);
-    background:var(--paper);padding:1px 7px;border-radius:9px;white-space:nowrap;z-index:3;box-shadow:0 1px 3px rgba(0,0,0,.08)}
-  .lane .departlab{position:absolute;top:24px;transform:translateX(-50%);font-size:9px;font-weight:800;color:var(--brown2);white-space:nowrap}
-  /* 敌集结 5:00 band + 发车 tick */
-  .lane .gband{position:absolute;top:55px;height:12px;left:0;border-radius:6px;border:1.5px solid rgba(245,195,28,.55);
-    background:repeating-linear-gradient(45deg,rgba(245,195,28,.34) 0 6px,rgba(245,195,28,.12) 6px 12px)}
-  .lane .gbl{position:absolute;top:38px;transform:translateX(-50%);font-size:10px;font-weight:800;color:#b88a08;white-space:nowrap}
-  .lane .depart{position:absolute;top:50px;transform:translateX(-50%);z-index:2}
-  .lane .depart i{display:block;width:2px;height:22px;background:var(--brown2);opacity:.55;margin:0 auto}
-  .lane .fire{position:absolute;top:0;transform:translateX(-50%);background:var(--green);color:#fff;font-weight:900;
+  /* === two-swimlane ruler: TOP row = 敌方(coral/amber), BOTTOM row = 我方(green/mint), shared time x-axis === */
+  .lane .lname{top:4px}
+  .lane .etrack,.lane .otrack{position:absolute;left:0;right:0;height:9px;border-radius:5px;background:var(--line-hi)}
+  .lane .etrack{top:44px}
+  .lane .otrack{top:98px}
+  /* --- 敌方 (top) --- */
+  .lane .gband{position:absolute;top:42px;height:13px;left:0;border-radius:6px;border:1.5px solid rgba(245,195,28,.6);z-index:1;
+    background:repeating-linear-gradient(45deg,rgba(245,195,28,.36) 0 6px,rgba(245,195,28,.13) 6px 12px)}
+  .lane .eflight{position:absolute;top:44px;height:9px;border-radius:5px;background:rgba(224,90,90,.30);z-index:1}
+  .lane .gbl{position:absolute;top:26px;transform:translateX(-50%);font-size:9.5px;font-weight:800;color:#b88a08;white-space:nowrap}
+  .lane .elab{position:absolute;top:26px;transform:translateX(-50%);font-size:9.5px;font-weight:900;white-space:nowrap}
+  .lane .elab.depart{color:var(--brown2);font-weight:800;font-size:9px;top:57px}
+  .lane .elab.land{color:var(--coral)}
+  .lane .edot{position:absolute;top:42px;transform:translateX(-50%);z-index:3}
+  .lane .edot .d{display:block;width:13px;height:13px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.18);background:var(--coral)}
+  .lane .depart{position:absolute;top:40px;transform:translateX(-50%);z-index:2}
+  .lane .depart i{display:block;width:2px;height:17px;background:var(--brown2);opacity:.5;margin:0 auto}
+  /* --- 我方 (bottom) --- */
+  .lane .mspan{position:absolute;top:96px;height:13px;border-radius:6px;background:rgba(111,186,44,.22);border:1.5px solid rgba(111,186,44,.5);z-index:1}
+  .lane .odot{position:absolute;top:96px;transform:translateX(-50%);z-index:3}
+  .lane .odot .d{display:block;width:13px;height:13px;border-radius:50%;border:3px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.18)}
+  .lane .odot.send .d{background:var(--green)}
+  .lane .odot.refill .d{background:var(--mint)}
+  .lane .mlab{position:absolute;top:80px;transform:translateX(-50%);font-size:9.5px;font-weight:900;color:var(--green-deep);background:var(--paper);padding:0 5px;border-radius:7px;white-space:nowrap;z-index:3}
+  .lane .olab{position:absolute;top:112px;transform:translateX(-50%);font-size:9.5px;font-weight:900;white-space:nowrap;text-align:center;line-height:1.25}
+  .lane .olab.send{color:var(--green-deep)}
+  .lane .olab.send span{display:block;font-weight:800;color:var(--brown2);font-size:9px}
+  .lane .olab.refill{color:var(--mint-deep)}
+  /* row tags */
+  .lane .rowtag{position:absolute;left:0;font-size:9px;font-weight:900;color:#fff;padding:1px 6px;border-radius:7px;z-index:5}
+  .lane .rowtag.enemy{top:39px;background:var(--coral)}
+  .lane .rowtag.our{top:93px;background:var(--green)}
+  /* shared playhead spans both rows (the "same time" cursor) */
+  .enemyblock .lane .head{top:38px;height:74px;width:3px;background:var(--brown);opacity:.42;border-radius:2px;z-index:2}
+  .lane .fire{position:absolute;top:78px;transform:translateX(-50%);background:var(--green);color:#fff;font-weight:900;
     font-size:11px;padding:3px 11px;border-radius:20px;opacity:0;transition:opacity .12s;z-index:7;
     box-shadow:0 3px 10px rgba(111,186,44,.55);white-space:nowrap}
-  /* key-moment emphasis (pause animations) */
+  /* key-moment emphasis (pause animations) — scale the inner .d so centering transform is preserved */
   @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.7)}}
-  .lane.fx-send .mk.send .dot{animation:beat .5s ease-in-out infinite;box-shadow:0 0 0 8px rgba(111,186,44,.3)}
+  .lane.fx-send .odot.send .d{animation:beat .5s ease-in-out infinite;box-shadow:0 0 0 8px rgba(111,186,44,.32)}
   .lane.fx-send .fire{opacity:1}
-  .lane.fx-land .mk.impact .dot{animation:beat .5s ease-in-out infinite;box-shadow:0 0 0 8px rgba(224,90,90,.35)}
-  .lane.fx-refill .mk.impact .dot{animation:beat .5s ease-in-out infinite;box-shadow:0 0 0 8px rgba(25,200,185,.35)}
-  .lane.now{outline:2px solid rgba(111,186,44,.35);outline-offset:-2px;border-radius:16px}
+  .lane.fx-land .edot.land .d{animation:beat .5s ease-in-out infinite;box-shadow:0 0 0 8px rgba(224,90,90,.35)}
+  .lane.fx-refill .odot.refill .d{animation:beat .5s ease-in-out infinite;box-shadow:0 0 0 8px rgba(25,200,185,.35)}
+  .lane.now{outline:2px solid rgba(111,186,44,.3);outline-offset:-2px;border-radius:16px}
 </style>
 </head>
 <body>
@@ -111,7 +123,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=10"></script>
+<script src="app.js?v=11"></script>
 <script>
 (function(){
 "use strict";
@@ -155,17 +167,28 @@ function renderStrips(){ var box=$("refillPanel"); box.innerHTML="";
     var el=document.createElement("div"); el.className="lane"; el.setAttribute("data-i",i);
     el.innerHTML=
       '<div class="lname">'+TF("d_lane_title",{n:nm,x:mmss(c.em)})+'</div>'+
-      '<div class="track"></div>'+
+      /* 敌方 row (top) */
+      '<div class="rowtag enemy">'+T("d_side_enemy")+'</div>'+
+      '<div class="etrack"></div>'+
       '<div class="gband" style="width:'+gx.toFixed(1)+'%"></div>'+
+      '<div class="eflight" style="left:'+gx.toFixed(1)+'%;width:'+Math.max(0,lx-gx).toFixed(2)+'%"></div>'+
       '<div class="gbl" style="left:'+(gx/2).toFixed(1)+'%">'+T("d_gather_band")+'</div>'+
       '<div class="depart" style="left:'+gx.toFixed(1)+'%"><i></i></div>'+
-      '<div class="departlab" style="left:'+gx.toFixed(1)+'%">'+T("d_depart")+'</div>'+
+      '<div class="elab depart" style="left:'+gx.toFixed(1)+'%">'+T("d_depart")+'</div>'+
+      '<div class="edot land" style="left:'+lx.toFixed(2)+'%"><i class="d"></i></div>'+
+      '<div class="elab land" style="left:'+Math.min(93,lx).toFixed(2)+'%">'+T("d_enemy_land")+'</div>'+
+      /* 我方 row (bottom) */
+      '<div class="rowtag our">'+T("d_side_our")+'</div>'+
+      '<div class="otrack"></div>'+
       '<div class="mspan" style="left:'+sx.toFixed(2)+'%;width:'+Math.max(0,rx-sx).toFixed(2)+'%"></div>'+
-      '<div class="mpill" style="left:'+Math.min(80,(sx+rx)/2).toFixed(2)+'%">'+TF("d_your_march",{x:mmss(c.R)})+'</div>'+
-      '<div class="fire" style="left:'+sx.toFixed(1)+'%">'+T("d_send_now")+'</div>'+
-      '<div class="head" style="left:'+sx.toFixed(1)+'%"></div>'+
-      '<div class="mk send" style="left:'+sx.toFixed(1)+'%"><div class="dot"></div><div class="l hi" style="color:var(--green-deep)">'+T("d_you_send")+'</div><div class="l">'+esc(c.short)+'</div></div>'+
-      '<div class="mk impact" style="left:'+Math.min(86,(lx+rx)/2).toFixed(2)+'%"><div class="il">'+T("d_enemy_land")+'</div><div class="ir">'+T("d_refill_plus")+'</div><div class="dot"></div></div>';
+      '<div class="mlab" style="left:'+Math.min(82,(sx+rx)/2).toFixed(2)+'%">'+TF("d_your_march",{x:mmss(c.R)})+'</div>'+
+      '<div class="odot send" style="left:'+sx.toFixed(2)+'%"><i class="d"></i></div>'+
+      '<div class="odot refill" style="left:'+rx.toFixed(2)+'%"><i class="d"></i></div>'+
+      '<div class="olab send" style="left:'+Math.min(72,sx).toFixed(2)+'%"><b>'+T("d_you_send")+'</b><span>'+esc(c.short)+'</span></div>'+
+      '<div class="olab refill" style="left:'+Math.min(94,rx).toFixed(2)+'%">'+T("d_refilled")+'</div>'+
+      /* shared time cursor + send flash */
+      '<div class="fire" style="left:'+sx.toFixed(2)+'%">'+T("d_send_now")+'</div>'+
+      '<div class="head" style="left:'+sx.toFixed(2)+'%"></div>';
     blk.appendChild(el);
     var cue=document.createElement("div"); cue.className="erow";
     cue.innerHTML='<div class="et"><b>'+nm+'</b> · '+TF("d_erow",{x:mmss(c.R)})+'</div>'+

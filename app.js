@@ -73,7 +73,7 @@ window.I18N = {
     /* defense dynamic */
     d_empty: "管理员还没发布敌方鲸鱼；战时可口头报点，或在上面「我自己设敌鲸」临时试算。",
     d_you_send: "你发兵", d_enemy_land: "敌落地", d_refilled: "补满✓",
-    d_gather_band: "敌集结 5:00（加速）", d_send_now: "发兵！", d_your_march: "你行军 {x}", d_depart: "他发车", d_refill_plus: "+1秒 补满✓", d_side_enemy: "敌方", d_side_our: "我方",
+    d_gather_band: "敌集结 5:00（加速）", d_send_now: "发兵！", d_your_march: "你行军 {x}", d_depart: "他发车", d_refill_plus: "+1秒 补满✓", d_side_enemy: "敌方", d_side_our: "我方", d_indep_note: "每条各自独立 · 各自相对它自己发车算；点上方芯片切换大图聚焦哪条",
     d_short_gather: "集结剩 {x}", d_short_land: "发车后 {x}", d_short_imm: "发车后立刻", d_short_fill: "先填行军",
     d_cue_gather: "他集结剩 {x} 时发兵", d_cue_land: "他发车后 {x} 发兵",
     d_cue_imm: "他发车后立刻发（你很快）", d_cue_fill: "先填你的行军时间",
@@ -145,7 +145,7 @@ window.I18N = {
     def_foot: "March times vary by distance & speedups; verify in-game. Salty Fish's own, unofficial, not affiliated with Century Games 🐟",
     d_empty: "No enemy whales published yet; call them out in chat, or use “Set whales myself” above to try.",
     d_you_send: "You send", d_enemy_land: "Lands", d_refilled: "Refilled✓",
-    d_gather_band: "Enemy gather 5:00 (rush)", d_send_now: "SEND!", d_your_march: "march {x}", d_depart: "they depart", d_refill_plus: "+1s refilled✓", d_side_enemy: "Enemy", d_side_our: "You",
+    d_gather_band: "Enemy gather 5:00 (rush)", d_send_now: "SEND!", d_your_march: "march {x}", d_depart: "they depart", d_refill_plus: "+1s refilled✓", d_side_enemy: "Enemy", d_side_our: "You", d_indep_note: "each whale is independent · timed from its own launch; tap a chip above to switch which one the radar shows",
     d_short_gather: "gather -{x}", d_short_land: "after launch {x}", d_short_imm: "send now", d_short_fill: "fill march",
     d_cue_gather: "Send at their gather -{x}", d_cue_land: "Send {x} after they depart",
     d_cue_imm: "Send right after they depart (you're fast)", d_cue_fill: "Fill your march time first",

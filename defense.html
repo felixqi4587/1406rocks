@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f8f8f0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>咸鱼小队 · 防守支援</title>
-<link rel="stylesheet" href="app.css?v=12">
+<link rel="stylesheet" href="app.css?v=13">
 <style>
   /* enemy blocks (clear 敌A/敌B separation) */
   .enemyblock{border:2px solid var(--line);border-radius:20px;padding:8px;margin-bottom:16px;
@@ -57,6 +57,14 @@
   .lane.now{outline:2px solid rgba(111,186,44,.3);outline-offset:-2px;border-radius:16px}
   /* active source toggle (本机 vs 管理发布) */
   #useLocal.on,#useCloud.on{border-color:var(--mint);background:linear-gradient(180deg,#eafaf7,var(--mint-bg));color:var(--mint-deep);box-shadow:0 4px 12px -6px rgba(25,200,185,.6)}
+  /* whale focus chips (above the radar) */
+  .whalechips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px}
+  .whalechips .wchip{border:2px solid var(--line);background:var(--paper);color:var(--brown2);border-radius:999px;padding:7px 14px;font:800 12.5px/1 var(--font);cursor:pointer;transition:.14s}
+  .whalechips .wchip.on{border-color:var(--coral);background:linear-gradient(180deg,#fdeeee,#fbe3e3);color:var(--coral);box-shadow:0 4px 12px -6px rgba(224,90,90,.55)}
+  .whalechips .wchip:active{transform:translateY(1px)}
+  /* highlight the focused strip's card */
+  .enemyblock:has(.lane.focused){border-color:#bfeee7;box-shadow:0 6px 18px -8px rgba(25,200,185,.5)}
+  .lane{cursor:pointer}
 </style>
 </head>
 <body>
@@ -81,6 +89,7 @@
     <div class="mmss"><input id="me_mm" type="number" min="0" value="1"><span class="u" data-i18n="unit_min">分</span><span class="c">:</span><input id="me_ss" type="number" min="0" max="59" value="20"><span class="u" data-i18n="unit_sec">秒</span><span style="margin-left:auto;font-size:11px;color:var(--brown3)" data-i18n="def_usually">通常 1 分多</span></div>
   </div>
 
+  <div class="whalechips" id="whaleChips" style="display:none"></div>
   <div class="pond">
     <span class="cnr tl"></span><span class="cnr tr"></span><span class="cnr bl"></span><span class="cnr br"></span>
     <div class="phaselab" id="phaselab" data-i18n="d_ph_inc">敌方来袭 → 盯落地</div>
@@ -123,7 +132,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=12"></script>
+<script src="app.js?v=13"></script>
 <script>
 (function(){
 "use strict";
@@ -133,7 +142,7 @@ var C={mint:"#19c8b9",mintDeep:"#0fa193",green:"#6fba2c",greenDeep:"#5a9e1e",cor
 var LS_LOCAL="saltyfish_enemies", LS_NAME="rocks1406_admin", LS_MARCH="saltyfish_mymarch";
 function saveMarch(){ try{localStorage.setItem(LS_MARCH,JSON.stringify({mm:+$("me_mm").value||0,ss:+$("me_ss").value||0}));}catch(e){} }
 function loadMarch(){ try{ var m=JSON.parse(localStorage.getItem(LS_MARCH)||"null"); if(m){ $("me_mm").value=m.mm; $("me_ss").value=m.ss; } }catch(e){} }
-var enemies=[], cloudEnemies=[], localEnemies=[], useLocalFlag=false, baseUpdatedAt=null, adminName="";
+var enemies=[], cloudEnemies=[], localEnemies=[], useLocalFlag=false, baseUpdatedAt=null, adminName="", focusIdx=0;
 var T=window.t, TF=window.tf;   // i18n aliases (local `t` params shadow the global)
 
 function march(o){return (o.mm||0)*60+(o.ss||0);}
@@ -144,11 +153,11 @@ function esc(s){return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").repl
 function E(t,a){var e=document.createElementNS(NS,t);for(var k in a)e.setAttribute(k,a[k]);return e;}
 function lerp(a,b,p){return a+(b-a)*p;} function cl(x){return x<0?0:x>1?1:x;} function sg(t,a,b){return b<=a?(t>=b?1:0):cl((t-a)/(b-a));}
 
-/* ---- shared time→visual mapping (gather compressed to GVIS; radar+timeline identical) ---- */
-function W1(){ return (window.__W1)||(GATHER+60); }
-function vmap(t){ var w=W1(); if(t<=GATHER) return GVIS*(t/GATHER); return GVIS+(1-GVIS)*((t-GATHER)/Math.max(1,w-GATHER)); }
-function invmap(p){ var w=W1(); if(p<=GVIS) return p/GVIS*GATHER; return GATHER+(p-GVIS)/(1-GVIS)*(w-GATHER); }
-function pct(t){ return cl(vmap(t))*100; }
+/* ---- per-whale time→visual mapping (each whale scaled to ITS OWN clock; gather=GVIS of its own strip) ---- */
+function w1For(c){ return c.refillAt + Math.max(45,(c.refillAt-GATHER)*0.5); }
+function vmapW(t,w1){ if(t<=GATHER) return GVIS*(t/GATHER); return GVIS+(1-GVIS)*((t-GATHER)/Math.max(1,w1-GATHER)); }
+function invmapW(p,w1){ if(p<=GVIS) return p/GVIS*GATHER; return GATHER+(p-GVIS)/(1-GVIS)*(w1-GATHER); }
+function pctW(t,w1){ return cl(vmapW(t,w1))*100; }
 
 /* ---- per-enemy timing ---- */
 function calc(e){ var em=march(e), landAt=GATHER+em, refillAt=landAt+DELTA, R=myMarch(), sendAt=Math.max(0,refillAt-R);
@@ -161,10 +170,12 @@ function calc(e){ var em=march(e), landAt=GATHER+em, refillAt=landAt+DELTA, R=my
 /* ---- timeline strips ---- */
 function renderStrips(){ var box=$("refillPanel"); box.innerHTML="";
   if(!enemies.length){ box.innerHTML='<p class="hint">'+T("d_empty")+'</p>'; return; }
+  if(focusIdx>=enemies.length) focusIdx=0;
+  if(enemies.length>1){ var note=document.createElement("p"); note.className="hint"; note.style.margin="0 0 8px"; note.textContent=T("d_indep_note"); box.appendChild(note); }
   enemies.forEach(function(e,i){ var c=calc(e); var nm=esc(e.name||(T("d_enemy")+String.fromCharCode(65+i)));
-    var gx=GVIS*100, sx=pct(c.sendAt), lx=pct(c.landAt), rx=pct(c.refillAt);
+    var w1=w1For(c), gx=GVIS*100, sx=pctW(c.sendAt,w1), lx=pctW(c.landAt,w1), rx=pctW(c.refillAt,w1);
     var blk=document.createElement("div"); blk.className="enemyblock";
-    var el=document.createElement("div"); el.className="lane"; el.setAttribute("data-i",i);
+    var el=document.createElement("div"); el.className="lane"+(i===focusIdx?" focused":""); el.setAttribute("data-i",i);
     el.innerHTML=
       '<div class="lname">'+TF("d_lane_title",{n:nm,x:mmss(c.em)})+'</div>'+
       '<div class="axis"></div>'+
@@ -185,9 +196,10 @@ function renderStrips(){ var box=$("refillPanel"); box.innerHTML="";
       '<div class="odot refill" style="left:'+rx.toFixed(2)+'%"><i class="d"></i></div>'+
       '<div class="olab send" style="left:'+Math.min(72,sx).toFixed(2)+'%"><b>'+T("d_you_send")+'</b><span>'+esc(c.short)+'</span></div>'+
       '<div class="olab refill" style="left:'+Math.min(94,rx).toFixed(2)+'%">'+T("d_refilled")+'</div>'+
-      /* shared time cursor + send flash */
+      /* time cursor (only the focused strip animates) + send flash */
       '<div class="fire" style="left:'+sx.toFixed(2)+'%">'+T("d_send_now")+'</div>'+
-      '<div class="head" style="left:'+sx.toFixed(2)+'%"></div>';
+      (i===focusIdx?'<div class="head" style="left:'+sx.toFixed(2)+'%"></div>':'');
+    el.addEventListener("click",function(){ if(focusIdx!==i){ focusIdx=i; refocus(); } });
     blk.appendChild(el);
     var cue=document.createElement("div"); cue.className="erow";
     cue.innerHTML='<div class="et"><b>'+nm+'</b> · '+TF("d_erow",{x:mmss(c.R)})+'</div>'+
@@ -204,6 +216,7 @@ function buildBase(){ svgEl=$("svg"); svgEl.innerHTML="";
   svgEl.appendChild(E("circle",{cx:cx,cy:cy,r:78,fill:"none",stroke:"#a7e6dd","stroke-width":2,opacity:.7}));
   svgEl.appendChild(E("circle",{cx:cx,cy:cy,r:50,fill:"none",stroke:"#a7e6dd","stroke-width":2,opacity:.5}));
 }
+function focusEnemy(){ var arr=enemies.length?enemies:[{name:T("d_enemy")+"A",mm:1,ss:10}]; if(focusIdx>=arr.length)focusIdx=0; if(focusIdx<0)focusIdx=0; return arr[focusIdx]; }
 function rebuild(){ buildBase(); anim={};
   anim.castle=E("rect",{x:cx-20,y:cy-17,width:40,height:34,rx:9,fill:"#fce3b8",stroke:C.brown,"stroke-width":3}); svgEl.appendChild(anim.castle);
   svgEl.appendChild(E("rect",{x:cx-20,y:cy-24,width:8,height:9,rx:2,fill:C.brown})); svgEl.appendChild(E("rect",{x:cx-4,y:cy-24,width:8,height:9,rx:2,fill:C.brown})); svgEl.appendChild(E("rect",{x:cx+12,y:cy-24,width:8,height:9,rx:2,fill:C.brown}));
@@ -213,63 +226,51 @@ function rebuild(){ buildBase(); anim={};
   anim.fxt=E("text",{x:cx,y:cy,"text-anchor":"middle","font-size":13,"font-weight":900,opacity:0}); svgEl.appendChild(anim.fxt);
   svgEl.appendChild(E("rect",{x:bx-10,y:by-10,width:20,height:20,rx:6,fill:"#dff7f2",stroke:C.mintDeep,"stroke-width":2.5}));
   svgEl.appendChild(E("text",{x:bx,y:by+4,"text-anchor":"middle","font-size":11})).textContent="🛡️";
-  var Ed=enemies.length?enemies:[{name:T("d_enemy")+"A",mm:1,ss:10}]; var n=Ed.length, maxRef=0;
-  anim.enemies=Ed.map(function(e,i){ var c=calc(e); maxRef=Math.max(maxRef,c.refillAt);
-    var ang=Math.PI*(0.5-(n===1?0:(i/(n-1)-0.5))*0.9), sx2=cx+Math.cos(ang)*150, sy2=cy-Math.abs(Math.sin(ang))*92-16;
-    var o={c:c,sx:sx2,sy:sy2};
-    o.aura=E("circle",{cx:sx2,cy:sy2,r:14,fill:"none",stroke:C.yellow,"stroke-width":2.5,opacity:0,"stroke-dasharray":"3 5"}); svgEl.appendChild(o.aura);
-    o.dot=E("circle",{cx:sx2,cy:sy2,r:11,fill:C.coral,opacity:0,stroke:"#fff","stroke-width":2}); svgEl.appendChild(o.dot);
-    o.eye=E("circle",{cx:sx2,cy:sy2,r:2,fill:"#fff",opacity:0}); svgEl.appendChild(o.eye);
-    o.cd=E("text",{x:sx2,y:sy2-15,"text-anchor":"middle",fill:C.coral,"font-size":10,"font-weight":800,opacity:0}); svgEl.appendChild(o.cd);
-    o.bub=[0,1,2].map(function(){var d=E("circle",{cx:bx,cy:by,r:4,fill:C.mint,opacity:0,stroke:"#fff","stroke-width":1.5});svgEl.appendChild(d);return d;});
-    return o;
-  });
-  window.__W1=maxRef+Math.max(45,(maxRef-GATHER)*0.5);
-  // key moments (sorted): each enemy's send / land / refill
-  var keys=[]; anim.enemies.forEach(function(o,i){ keys.push({t:o.c.sendAt,type:"send",ei:i},{t:o.c.landAt,type:"land",ei:i},{t:o.c.refillAt,type:"refill",ei:i}); });
+  // radar shows ONLY the focused whale, on its own clock
+  var c=calc(focusEnemy()); anim.c=c; anim.w1=w1For(c);
+  var spawnX=cx, spawnY=cy-92-16, o={c:c,sx:spawnX,sy:spawnY};
+  o.aura=E("circle",{cx:spawnX,cy:spawnY,r:14,fill:"none",stroke:C.yellow,"stroke-width":2.5,opacity:0,"stroke-dasharray":"3 5"}); svgEl.appendChild(o.aura);
+  o.dot=E("circle",{cx:spawnX,cy:spawnY,r:12,fill:C.coral,opacity:0,stroke:"#fff","stroke-width":2}); svgEl.appendChild(o.dot);
+  o.eye=E("circle",{cx:spawnX,cy:spawnY,r:2,fill:"#fff",opacity:0}); svgEl.appendChild(o.eye);
+  o.cd=E("text",{x:spawnX,y:spawnY-15,"text-anchor":"middle",fill:C.coral,"font-size":10,"font-weight":800,opacity:0}); svgEl.appendChild(o.cd);
+  o.bub=[0,1,2].map(function(){var d=E("circle",{cx:bx,cy:by,r:4,fill:C.mint,opacity:0,stroke:"#fff","stroke-width":1.5});svgEl.appendChild(d);return d;});
+  anim.foc=o;
+  var keys=[{t:c.sendAt,type:"send"},{t:c.landAt,type:"land"},{t:c.refillAt,type:"refill"}];
   keys.sort(function(a,b){return a.t-b.t;}); anim.keys=keys; anim.p=0; anim.ki=0; anim.holdUntil=0;
 }
-function shieldVal(t){ var v=1; anim.enemies.forEach(function(o){ if(t>=o.c.landAt) v-=0.5; if(t>=o.c.refillAt) v+=0.5; }); return cl(v); }
-function renderAnim(t, curKey, ts){ if(!anim) return; ts=ts||0;
-  var sv=shieldVal(t); anim.bar.setAttribute("width",(58*sv).toFixed(1)); anim.bar.setAttribute("fill", sv<0.7?C.coral:C.green);
-  anim.castle.setAttribute("stroke", sv<0.7?C.coral:C.brown);
-  anim.enemies.forEach(function(o){ var c=o.c, x=o.sx, y=o.sy;
-    if(t<GATHER){ o.dot.setAttribute("opacity",.9); var pu=0.5+0.5*Math.sin(t*0.5); o.aura.setAttribute("opacity",.4+.4*pu); o.aura.setAttribute("r",(15+5*pu).toFixed(1)); o.aura.setAttribute("cx",x); o.aura.setAttribute("cy",y);
-      o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-17); o.cd.setAttribute("fill",C.brown2); o.cd.textContent=TF("d_gather_cd",{x:mmss(GATHER-t)}); }
-    else if(t<c.landAt){ o.aura.setAttribute("opacity",0); var ap=sg(t,GATHER,c.landAt); x=lerp(o.sx,cx,ap); y=lerp(o.sy,cy,ap);
-      o.dot.setAttribute("opacity",1); o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-15); o.cd.setAttribute("fill",C.coral); o.cd.textContent=TF("d_land_cd",{x:mmss(c.landAt-t)}); }
-    else { o.dot.setAttribute("opacity",0); o.cd.setAttribute("opacity",0); o.aura.setAttribute("opacity",0); }
-    o.dot.setAttribute("cx",x); o.dot.setAttribute("cy",y);
-    o.eye.setAttribute("opacity", t<c.landAt?0.9:0); o.eye.setAttribute("cx",x+3); o.eye.setAttribute("cy",y-2);
-    var rp=sg(t,c.sendAt,c.refillAt), on=t>=c.sendAt && t<c.refillAt;
-    o.bub.forEach(function(d,k){ if(on){ var ox=(k-1)*7; d.setAttribute("opacity",.95); d.setAttribute("cx",lerp(bx+ox,cx+ox,rp)); d.setAttribute("cy",lerp(by,cy,rp)); } else d.setAttribute("opacity",0); });
-  });
-  // emphasis (pause animation) on radar
-  if(curKey){ var pu=0.5+0.5*Math.sin(ts*0.012); var col=curKey.type==="send"?C.green:(curKey.type==="land"?C.coral:C.mint);
+function renderAnim(t, curKey, ts){ if(!anim||!anim.foc) return; ts=ts||0;
+  var c=anim.c, o=anim.foc, sv=(t>=c.landAt && t<c.refillAt)?0.4:1;
+  anim.bar.setAttribute("width",(58*sv).toFixed(1)); anim.bar.setAttribute("fill", sv<0.7?C.coral:C.green); anim.castle.setAttribute("stroke", sv<0.7?C.coral:C.brown);
+  var x=o.sx, y=o.sy;
+  if(t<GATHER){ o.dot.setAttribute("opacity",.9); var pu=0.5+0.5*Math.sin(t*0.5); o.aura.setAttribute("opacity",.4+.4*pu); o.aura.setAttribute("r",(15+5*pu).toFixed(1)); o.aura.setAttribute("cx",x); o.aura.setAttribute("cy",y);
+    o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-17); o.cd.setAttribute("fill",C.brown2); o.cd.textContent=TF("d_gather_cd",{x:mmss(GATHER-t)}); }
+  else if(t<c.landAt){ o.aura.setAttribute("opacity",0); var ap=sg(t,GATHER,c.landAt); x=lerp(o.sx,cx,ap); y=lerp(o.sy,cy,ap);
+    o.dot.setAttribute("opacity",1); o.cd.setAttribute("opacity",1); o.cd.setAttribute("x",x); o.cd.setAttribute("y",y-15); o.cd.setAttribute("fill",C.coral); o.cd.textContent=TF("d_land_cd",{x:mmss(c.landAt-t)}); }
+  else { o.dot.setAttribute("opacity",0); o.cd.setAttribute("opacity",0); o.aura.setAttribute("opacity",0); }
+  o.dot.setAttribute("cx",x); o.dot.setAttribute("cy",y);
+  o.eye.setAttribute("opacity", t<c.landAt?0.9:0); o.eye.setAttribute("cx",x+3); o.eye.setAttribute("cy",y-2);
+  var rp=sg(t,c.sendAt,c.refillAt), on=t>=c.sendAt && t<c.refillAt;
+  o.bub.forEach(function(d,k){ if(on){ var ox=(k-1)*7; d.setAttribute("opacity",.95); d.setAttribute("cx",lerp(bx+ox,cx+ox,rp)); d.setAttribute("cy",lerp(by,cy,rp)); } else d.setAttribute("opacity",0); });
+  if(curKey){ var pu2=0.5+0.5*Math.sin(ts*0.012); var col=curKey.type==="send"?C.green:(curKey.type==="land"?C.coral:C.mint);
     var fxX=curKey.type==="send"?bx:cx, fxY=curKey.type==="send"?by:cy;
-    anim.fx.setAttribute("opacity",.9); anim.fx.setAttribute("stroke",col); anim.fx.setAttribute("cx",fxX); anim.fx.setAttribute("cy",fxY); anim.fx.setAttribute("r",(16+14*pu).toFixed(1));
+    anim.fx.setAttribute("opacity",.9); anim.fx.setAttribute("stroke",col); anim.fx.setAttribute("cx",fxX); anim.fx.setAttribute("cy",fxY); anim.fx.setAttribute("r",(16+14*pu2).toFixed(1));
     anim.fxt.setAttribute("opacity",1); anim.fxt.setAttribute("fill",col); anim.fxt.setAttribute("x",fxX); anim.fxt.setAttribute("y",fxY-26); anim.fxt.textContent=curKey.type==="send"?T("d_fx_send"):(curKey.type==="land"?T("d_fx_land"):T("d_fx_refill"));
   } else { anim.fx.setAttribute("opacity",0); anim.fxt.setAttribute("opacity",0); }
   $("phaselab").textContent = t<GATHER ? T("d_ph_gather") : (curKey&&curKey.type==="send"?T("d_ph_send"):(curKey&&curKey.type==="land"?T("d_ph_land"):(curKey&&curKey.type==="refill"?T("d_ph_refill"):(sv<0.7?T("d_ph_low"):T("d_ph_inc")))));
-  // timeline playheads + emphasis (same t → matched)
-  var hp=pct(t);
-  document.querySelectorAll("#refillPanel .lane").forEach(function(L){ var i=+L.getAttribute("data-i");
-    var h=L.querySelector(".head"); if(h) h.style.left=hp.toFixed(2)+"%";
-    L.classList.remove("fx-send","fx-land","fx-refill","now");
-    if(curKey && curKey.ei===i){ L.classList.add("fx-"+curKey.type,"now"); }
-  });
+  // move ONLY the focused strip's playhead (other strips are static diagrams)
+  var L=document.querySelector("#refillPanel .lane.focused"); if(L){ var h=L.querySelector(".head"); if(h) h.style.left=pctW(t,anim.w1).toFixed(2)+"%"; L.classList.remove("fx-send","fx-land","fx-refill","now"); if(curKey) L.classList.add("fx-"+curKey.type,"now"); }
 }
-/* playback with pauses at key moments */
+/* playback with pauses at key moments (focused whale's own clock) */
 var tNow=0,playing=true,lastTs=null, SWEEP=4.5, HOLD={send:1400,land:800,refill:900};
-function frame(ts){ if(lastTs==null)lastTs=ts; var dt=(ts-lastTs)/1000; lastTs=ts; if(!anim){requestAnimationFrame(frame);return;}
+function frame(ts){ if(lastTs==null)lastTs=ts; var dt=(ts-lastTs)/1000; lastTs=ts; if(!anim||!anim.w1){requestAnimationFrame(frame);return;}
   if(playing){
     if(anim.holdUntil){ if(ts>=anim.holdUntil){ anim.holdUntil=0; anim.ki++; } }
     if(!anim.holdUntil){
       anim.p += dt/SWEEP;
-      if(anim.ki<anim.keys.length){ var kp=vmap(anim.keys[anim.ki].t); if(anim.p>=kp){ anim.p=kp; anim.holdUntil=ts+(HOLD[anim.keys[anim.ki].type]||700); } }
+      if(anim.ki<anim.keys.length){ var kp=vmapW(anim.keys[anim.ki].t,anim.w1); if(anim.p>=kp){ anim.p=kp; anim.holdUntil=ts+(HOLD[anim.keys[anim.ki].type]||700); } }
       if(anim.p>=1){ anim.p=0; anim.ki=0; anim.holdUntil=0; }
     }
-    tNow=invmap(anim.p); $("scrub").value=Math.round(anim.p*1000);
+    tNow=invmapW(anim.p,anim.w1); $("scrub").value=Math.round(anim.p*1000);
   }
   var curKey = anim.holdUntil && anim.ki<anim.keys.length ? anim.keys[anim.ki] : null;
   renderAnim(tNow, curKey, ts); requestAnimationFrame(frame); }
@@ -278,8 +279,15 @@ function frame(ts){ if(lastTs==null)lastTs=ts; var dt=(ts-lastTs)/1000; lastTs=t
 var netState={s:"",key:"d_net_connecting",vars:{}};
 function setNet(s,key,vars){ netState={s:s,key:key,vars:vars||{}}; renderNet(); }
 function renderNet(){ $("netdot").className="dot"+(netState.s?(" "+netState.s):""); $("netlab").textContent=TF(netState.key,netState.vars); }
-function pickEnemies(){ enemies=(useLocalFlag&&localEnemies.length)?localEnemies.slice():cloudEnemies.slice(); rebuildAll(); }
-function rebuildAll(){ rebuild(); renderStrips(); }
+function pickEnemies(){ enemies=(useLocalFlag&&localEnemies.length)?localEnemies.slice():cloudEnemies.slice(); if(focusIdx>=enemies.length)focusIdx=0; rebuildAll(); }
+function rebuildAll(){ rebuild(); renderStrips(); renderChips(); }
+function renderChips(){ var box=$("whaleChips"); if(!box) return;
+  if(enemies.length<=1){ box.innerHTML=""; box.style.display="none"; return; }
+  box.style.display="flex";
+  box.innerHTML=enemies.map(function(e,i){ var nm=esc(e.name||(T("d_enemy")+String.fromCharCode(65+i))); return '<button class="wchip'+(i===focusIdx?" on":"")+'" data-i="'+i+'">🔴 '+nm+'</button>'; }).join("");
+  [].forEach.call(box.querySelectorAll("button"),function(b){ b.onclick=function(){ var i=+b.getAttribute("data-i"); if(i!==focusIdx){ focusIdx=i; refocus(); } }; });
+}
+function refocus(){ rebuild(); renderStrips(); renderChips(); lastTs=null; playing=true; var pp=$("pp"); if(pp)pp.textContent="⏸"; }
 function seedLocalIfEmpty(){ if(!localEnemies.length && cloudEnemies.length){ localEnemies=cloudEnemies.map(function(e){return {name:e.name,mm:e.mm,ss:e.ss};}); saveLocal(); renderLocal(); } }
 function setMode(local){ useLocalFlag=!!local; var ul=$("useLocal"),uc=$("useCloud"); if(ul)ul.classList.toggle("on",useLocalFlag); if(uc)uc.classList.toggle("on",!useLocalFlag); pickEnemies(); }
 function loadPlan(){ setNet("","d_net_connecting");
@@ -315,7 +323,7 @@ function publish(){ var b=$("pubBtn"); b.disabled=true; var old=b.textContent; b
 /* ---- wire ---- */
 ["me_mm","me_ss"].forEach(function(id){$(id).addEventListener("input",function(){saveMarch();rebuildAll();});});
 $("pp").addEventListener("click",function(){playing=!playing;$("pp").textContent=playing?"⏸":"▶";lastTs=null;});
-$("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶"; anim.p=(+$("scrub").value)/1000; anim.holdUntil=0; tNow=invmap(anim.p); renderAnim(tNow,null,0);});
+$("scrub").addEventListener("input",function(){playing=false;$("pp").textContent="▶"; anim.p=(+$("scrub").value)/1000; anim.holdUntil=0; tNow=invmapW(anim.p,anim.w1); renderAnim(tNow,null,0);});
 $("addLocal").addEventListener("click",function(){localEnemies.push({name:T("d_enemy")+String.fromCharCode(65+localEnemies.length),mm:1,ss:0});saveLocal();renderLocal();});
 $("useLocal").addEventListener("click",function(){seedLocalIfEmpty();setMode(true);toast(T("d_t_local"));});
 $("useCloud").addEventListener("click",function(){setMode(false);toast(T("d_t_cloud"));});

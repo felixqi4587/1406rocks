@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#f8f8f0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>咸鱼小队 · 礼包码</title>
-<link rel="stylesheet" href="app.css?v=15">
+<link rel="stylesheet" href="app.css?v=16">
 <style>
   /* redeem matrix — compact, collapsible per-member (scales when the roster grows) */
   #redeemLog .rlog-sum{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px;font:800 13px/1.4 var(--font);color:var(--brown)}
@@ -87,10 +87,6 @@
     <div class="card">
       <h2 data-i18n="g_codes_title">🎟 当前可用礼包码</h2>
       <div id="autoCodes" class="hint" data-i18n="g_loading">加载中…</div>
-      <details style="background:none;border:none;box-shadow:none;padding:0;margin:12px 0 0">
-        <summary style="font-size:13px;padding:6px 0" data-i18n="g_hist_sum">📜 历史码（已过期 / 已用尽）</summary>
-        <div id="codeHistory" class="hint" style="margin-top:6px">—</div>
-      </details>
     </div>
     <div class="card">
       <button class="btn amber full" id="runRedeem" data-i18n="g_redeem_btn">▶ 立即云端兑换全队</button>
@@ -112,7 +108,7 @@
 </div>
 <div class="toast" id="toast"></div>
 
-<script src="app.js?v=15"></script>
+<script src="app.js?v=16"></script>
 <script>
 (function(){
 "use strict";
@@ -162,10 +158,7 @@ function saveRosterNow(silent){ try{localStorage.setItem(LS_ROSTER,JSON.stringif
 /* ---------- codes + history ---------- */
 function loadAutoCodes(){ var box=$("autoCodes"); if(!box) return; box.textContent=T("g_loading");
   fetch(WBASE+"/codes",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){ var cs=(j&&j.codes)||[];
-    box.innerHTML= cs.length? '<div class="chips">'+cs.map(function(c){return '<span class="chip" style="background:var(--acb);border-color:var(--gold-line);color:var(--ac2)">'+esc(c)+'</span>';}).join("")+'</div>' : '<span class="hint">'+T("g_codes_none")+'</span>';
-    var hb=$("codeHistory"); if(hb){ var h=(j&&j.history)||[];
-      hb.innerHTML= h.length? '<div class="chips">'+h.map(function(x){var lab=x.status==="usedup"?T("g_hist_usedup"):T("g_hist_expired");
-        return '<span class="chip" style="opacity:.6;text-decoration:line-through" title="'+lab+'">'+esc(x.code)+'</span>';}).join("")+'</div>' : '<span class="hint">—</span>'; } })
+    box.innerHTML= cs.length? '<div class="chips">'+cs.map(function(c){return '<span class="chip" style="background:var(--acb);border-color:var(--gold-line);color:var(--ac2)">'+esc(c)+'</span>';}).join("")+'</div>' : '<span class="hint">'+T("g_codes_none")+'</span>'; })
    .catch(function(){ box.textContent=T("g_codes_failed"); }); }
 
 /* ---------- redeem log ---------- */
@@ -178,19 +171,18 @@ function renderLog(rec){ var log=$("redeemLog"); if(!log) return;
     else if(rec&&rec.codes&&!rec.codes.length) log.innerHTML='<p class="hint">'+T("g_log_no_codes")+'</p>';
     else log.innerHTML='<p class="hint">'+T("g_log_none")+'</p>';
     return; }
-  var groups=[], idx={};
-  rec.results.forEach(function(r){ var k=r.fid; if(idx[k]==null){ idx[k]=groups.length; groups.push({fid:r.fid,name:r.name,rows:[]}); } groups[idx[k]].rows.push(r); });
   function isGot(s){return s==="ok"||s==="already";}
-  function isDead(s){return s==="expired"||s==="usedup"||s==="invalid"||s==="limited";}
-  groups.forEach(function(g){ g.got=g.rows.filter(function(r){return isGot(r.status);}).length; g.dead=g.rows.filter(function(r){return isDead(r.status);}).length; g.total=g.rows.length; g.gettable=g.total-g.dead; g.complete=(g.got>=g.gettable); });
+  var DEAD={expired:1,usedup:1,invalid:1,limited:1};
+  var liveCodes={}, groups=[], idx={};
+  rec.results.forEach(function(r){ if(DEAD[r.status]) return; /* 只显示当前有效的码 */ liveCodes[r.code]=1; var k=r.fid; if(idx[k]==null){ idx[k]=groups.length; groups.push({fid:r.fid,name:r.name,rows:[]}); } groups[idx[k]].rows.push(r); });
+  groups.forEach(function(g){ g.got=g.rows.filter(function(r){return isGot(r.status);}).length; g.total=g.rows.length; g.gettable=g.total; g.complete=(g.got>=g.total); });
   groups.sort(function(a,b){ return (a.complete?1:0)-(b.complete?1:0) || (a.got/(a.gettable||1))-(b.got/(b.gettable||1)); }); // 还没补齐(有问题)的排前面
   var mode=(rec.mode==="auto"?T("g_mode_auto"):(rec.mode==="discord"?T("g_mode_discord"):T("g_mode_manual")));
   var done=groups.filter(function(g){return g.complete;}).length;
   var head='<div class="rlog-sum"><span>'+T("g_log_detail")+mode+'</span>'
-    +'<span class="hint">'+esc(when)+' · '+groups.length+T("g_ppl")+'·'+(rec.codes?rec.codes.length:0)+T("g_codes_unit")+'</span>'
+    +'<span class="hint">'+esc(when)+' · '+groups.length+T("g_ppl")+'·'+Object.keys(liveCodes).length+T("g_codes_unit")+'</span>'
     +(rec.newSuccess?'<span class="rlog-new">'+T("g_new_redeemed")+rec.newSuccess+'</span>':'')+'</div>'
     +'<div class="rlog-leg"><span><i style="background:var(--green-deep)"></i>'+T("g_got")+'</span>'
-    +'<span><i style="background:var(--brown3)"></i>'+T("st_expired")+'/'+T("st_usedup")+'</span>'
     +'<span><i style="background:var(--coral)"></i>'+T("st_err")+'</span>'
     +'<span style="margin-left:auto;font-weight:800;color:var(--green-deep)">'+done+'/'+groups.length+' '+T("g_allgot")+'</span></div>';
   var body=groups.map(function(g){
